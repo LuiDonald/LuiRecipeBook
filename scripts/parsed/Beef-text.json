@@ -1,0 +1,174 @@
+{
+  "category": "Beef",
+  "delete": [],
+  "recipes": [
+    {
+      "title": "Wine oxtail",
+      "description": "番茄紅酒炆牛尾 - tomato red wine braised oxtail. Serves 4-6.",
+      "ingredients": [
+        "Frozen oxtail, 2 kg",
+        "Red wine, 1 bottle",
+        "Large carrots (peeled & diced), 2",
+        "Shallots (peeled & sliced), 3",
+        "Onions (peeled & diced), 2",
+        "Celery (peeled & diced), 1/2 stalk",
+        "Tomato paste, 100 g",
+        "Peeled canned tomatoes, 200 g",
+        "Tomato purée, 200 g",
+        "Rosemary, 1 sprig",
+        "Thyme, 1 sprig",
+        "Olive oil, a little",
+        "Freshly ground black pepper, 1 tsp"
+      ],
+      "steps": [
+        "Sear the oxtail: heat a wide pan over medium-high and lightly sear the oxtail until the surface browns (no need to cook through); remove and set aside.",
+        "Sauté onions and shallots using the fat left from searing (add a little olive oil if needed): add the diced onions and cook until fragrant, then add the sliced shallots. Don't wash the pan - the browned bits add flavor.",
+        "When the onions turn translucent, add the diced carrots and celery; stir and cook until combined.",
+        "Add the tomato paste and sauté briefly until fragrant.",
+        "Turn off the heat and transfer everything to a large stew pot.",
+        "Over high heat, add the tomato purée and peeled canned tomatoes, mix well, then pour in the entire bottle of red wine.",
+        "Add the rosemary, thyme, and black pepper, and mix.",
+        "Add the seared oxtail. Braise on medium-low 45 minutes. Turn off the heat, cover, and rest 1 hour (residual heat gently softens the meat). Then simmer on medium-low another 30 minutes. Add a bit more rosemary and thyme if desired.",
+        "When the meat starts to fall off the bone it's done. Serve the same day, or cool and refrigerate - the flavor deepens overnight."
+      ]
+    },
+    {
+      "title": "Bo Lu luc",
+      "description": "Bò Lúc Lác - Vietnamese shaking beef with top sirloin.",
+      "ingredients": [
+        "1 lb top sirloin, cut into 1-inch cubes",
+        "Tenderizer: 1/2 tsp baking soda + 1-2 tbsp water",
+        "Marinade: 1 1/2 tbsp soy sauce",
+        "Marinade: 1 tbsp fish sauce",
+        "Marinade: 1 tbsp oyster sauce (optional)",
+        "Marinade: 1 1/2 tsp sugar",
+        "Marinade: 2 garlic cloves, minced",
+        "Marinade: 1/2 tsp black pepper",
+        "Marinade: 1 tbsp neutral oil",
+        "Cooking: 1-2 tbsp neutral oil (searing)",
+        "Cooking: 1 tbsp butter (finish)",
+        "Cooking: 1/2 onion in chunks (optional)",
+        "Dip: lime juice (1/2-1 lime) + pinch salt + lots of black pepper"
+      ],
+      "steps": [
+        "Tenderize (15-20 min): toss the beef with baking soda and a splash of water, wait 15-20 minutes, then rinse and pat VERY dry (important).",
+        "Marinate (10-30 min): toss the beef with the marinade and let it sit; if it looks wet, pat dry again.",
+        "Sear: heat the pan HIGH until smoking, add 1 tbsp oil, and add the beef in a single layer (2 batches if crowded). Don't move it for 45-60 sec, flip for 45 sec, quick toss 10-20 sec, then remove; repeat.",
+        "Finish (10-30 sec): lower to medium-high, add butter (and onion if using), toss the onion 30-45 sec, add the beef back, and toss 10-15 sec to glaze; off heat.",
+        "Serve with the lime-salt-pepper dip."
+      ]
+    },
+    {
+      "title": "Cold sear",
+      "description": "Cold-sear doneness log for tenderloin.",
+      "ingredients": ["Tenderloin"],
+      "steps": [
+        "Pull at 90°F, rest 10 min → medium-well, finishes at 123°F.",
+        "Pull at 75°F, rest 10 min → medium-rare, finishes at 110°F.",
+        "Try 70°F next time for more rare."
+      ]
+    },
+    {
+      "title": "Curry beef",
+      "description": "Quick pressure-cooker curry beef.",
+      "ingredients": [
+        "2 beef slices",
+        "100g curry sauce",
+        "500ml coconut cream (can use 400ml)"
+      ],
+      "steps": [
+        "Pressure cook for 40 minutes.",
+        "Reduce the liquid afterward."
+      ]
+    },
+    {
+      "title": "Reverse sear",
+      "description": "Reverse-sear temperature log for various cuts.",
+      "ingredients": [],
+      "steps": [
+        "Oven at 220°F, using a thermometer.",
+        "Tenderloin: pull at 95°F and rest (2.5-inch steak). 100°F was too cooked, 90°F a bit too raw, 96°F almost good (a tad over) - try 93°F next time.",
+        "Ribeye: pull at 105°F (120°F is too cooked), 2.5-inch steak. Latest: pull at 105°F, finish to 110°F manually. Miso marinade needs 4+ hours.",
+        "Tomahawk (thick): pull at 107°F, rest 10, rest until 110°F for rare. Update 8/24/2026 - a 107°F pull was a disaster (too much juice lost); try pulling at 100°F next time."
+      ]
+    },
+    {
+      "title": "Satay beef noodle",
+      "description": "沙嗲牛肉麵 - satay beef noodles. Notes: keeps 4+ days; V2 was too salty overnight so soy sauce was cut from 1 tbsp to 1/2; baking powder reduced from 3 to 2 tsp to cut the powdery taste; Skippy is sweeter/more peanutty and Jif less so, so half-and-half is preferred; 2/18 - try 1 tbsp baking powder per 1 lb beef next time.",
+      "ingredients": [
+        "牛冧肉 / Beef, 300g (thinly sliced across the grain, soaked to remove blood)",
+        "Marinade: light soy sauce 1/2 tbsp",
+        "Marinade: white pepper / oyster sauce 1/2 tsp",
+        "Marinade: baking powder 1 tsp",
+        "Marinade: Shaoxing wine / dark soy sauce 1/2 tsp each",
+        "Marinade: oil 2 tbsp",
+        "Satay sauce: garlic (minced), 2 cloves",
+        "Satay sauce: sacha sauce (沙茶醬), 3 tbsp",
+        "Satay sauce: peanut butter, 2 tbsp (best is half Skippy no-peanut + half Jif with peanut, i.e. 1 tbsp each)",
+        "Satay sauce: sugar, 1 tsp",
+        "Satay sauce: water, 100ml",
+        "公仔麵 / instant noodles, 1"
+      ],
+      "steps": [
+        "Marinate the beef overnight (best) or at least 4 hours.",
+        "Make the satay sauce: mix the sacha sauce, peanut butter, sugar, and water.",
+        "Heat a wok on high with a little oil and stir-fry the beef to 60-70% done; set aside.",
+        "Add a little oil, sauté the garlic until fragrant, then add the satay sauce (2-3 min on medium heat).",
+        "Add the beef back and cook until thickened (~2 min); set aside.",
+        "Boil water, cook the instant noodles, drain, top with the satay beef, and finish with sesame oil.",
+        "Tip: add 1 tsp chicken powder and a little noodle water (about half the cooking water), then add the noodles and top with the satay beef."
+      ]
+    },
+    {
+      "title": "Thai style ribeye",
+      "description": "Crying Tiger Steak Sandwich (from owen.han) - Thai-style ribeye. Only the ingredient list was saved from the original.",
+      "ingredients": [
+        "Sourdough bread",
+        "Unsalted butter, softened",
+        "1 tsp brown sugar",
+        "1 tsp fish sauce",
+        "1/4 tsp red chili flakes",
+        "1 tbsp cilantro, chopped",
+        "1 tsp lime juice",
+        "1 small shallot",
+        "1 red chili",
+        "Ribeye steak",
+        "Fish sauce",
+        "Soy sauce",
+        "Oyster sauce",
+        "Brown sugar",
+        "1 red chili, sliced",
+        "1/2 red onion, thinly sliced",
+        "1/4 cup cilantro, chopped",
+        "Crispy garlic chips"
+      ],
+      "steps": [
+        "Note: only the ingredient list was saved from the original (owen.han). Build it as a steak sandwich - season/sear the ribeye with fish sauce, soy sauce, oyster sauce and brown sugar, spread the compound butter (butter + brown sugar + fish sauce + chili flakes + cilantro + lime) on sourdough, and top with the sliced chili, red onion, cilantro, and crispy garlic chips."
+      ]
+    },
+    {
+      "title": "煲仔沙嗲牛肉麵",
+      "description": "煲仔沙嗲牛肉麵 - claypot satay beef noodles. One serving.",
+      "ingredients": [
+        "出前一丁 / instant noodles, 1",
+        "Beef, 100g",
+        "Enoki mushroom, 1 pack",
+        "Tofu puffs (豆卜), 4",
+        "Minced garlic, 2 cloves",
+        "Shallot, 1/2",
+        "Water",
+        "Beef marinade: light soy sauce 1 tsp, dark soy sauce 1 tsp, rice wine 1 tsp, white pepper 1/2 tsp, cornstarch 1 tsp, water 1 tbsp, oil 1 tbsp",
+        "Satay sauce: satay sauce (沙嗲醬) 2 tbsp, sacha sauce (沙茶醬) 1/2 tbsp, coarse peanut butter 1.5 tbsp, shrimp paste 1/2 tsp",
+        "Satay seasoning: light soy sauce 1 tbsp, dark soy sauce 1 tbsp, oyster sauce 1/2 tbsp, sugar 1 tbsp"
+      ],
+      "steps": [
+        "Slice the beef, add the marinade, and marinate 15 minutes.",
+        "Stir-fry the beef until about 80-90% cooked; set aside.",
+        "Mix the satay sauce (satay sauce, sacha sauce, peanut butter, shrimp paste) with the seasoning.",
+        "Sauté the minced garlic and shallot until fragrant, add the satay sauce and stir-fry, then add ~350ml water and bring the sauce to a boil; set aside.",
+        "Heat a claypot, add the enoki, tofu puffs, satay sauce, instant noodles, and ~50ml water; cover and cook 3 minutes.",
+        "After 3 minutes, add the cooked beef, cover, and cook another 2 minutes."
+      ]
+    }
+  ]
+}

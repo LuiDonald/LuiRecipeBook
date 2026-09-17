@@ -1,0 +1,188 @@
+import { Recipe } from "../types/recipe";
+
+// Placeholder recipes so the app is usable before Supabase is connected.
+// Photos are remote Unsplash URLs so the grid looks real out of the box.
+// Categories mirror the user's Google Drive folder structure.
+
+export const MOCK_RECIPES: Recipe[] = [
+  {
+    id: "1",
+    title: "Classic Margherita Pizza",
+    description: "Blistered thin crust with San Marzano tomatoes, fresh mozzarella, and basil.",
+    category: "Veggie",
+    photoUrl:
+      "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800&q=80",
+    ingredients: [
+      "1 pizza dough ball",
+      "1/2 cup San Marzano tomato sauce",
+      "125g fresh mozzarella",
+      "Fresh basil leaves",
+      "Extra virgin olive oil",
+      "Salt",
+    ],
+    steps: [
+      "Preheat oven (with stone if you have one) to its highest setting.",
+      "Stretch the dough into a 12-inch round.",
+      "Spread the tomato sauce, leaving a border for the crust.",
+      "Tear mozzarella over the top and drizzle with olive oil.",
+      "Bake 6–9 minutes until the crust is charred and cheese bubbles.",
+      "Finish with fresh basil and a pinch of salt.",
+    ],
+    tags: ["italian", "vegetarian", "dinner"],
+    createdAt: "2026-09-01T10:00:00.000Z",
+    updatedAt: "2026-09-01T10:00:00.000Z",
+  },
+  {
+    id: "2",
+    title: "Avocado Toast with Egg",
+    description: "Creamy smashed avocado on sourdough topped with a soft-boiled egg.",
+    category: "Egg",
+    photoUrl:
+      "https://images.unsplash.com/photo-1482049016688-2d3e1b311543?w=800&q=80",
+    ingredients: [
+      "2 slices sourdough bread",
+      "1 ripe avocado",
+      "2 eggs",
+      "Chili flakes",
+      "Lemon juice",
+      "Salt and pepper",
+    ],
+    steps: [
+      "Toast the sourdough until golden.",
+      "Soft-boil the eggs for 6.5 minutes, then peel.",
+      "Mash the avocado with lemon juice, salt, and pepper.",
+      "Spread avocado on toast, top with halved eggs.",
+      "Finish with chili flakes.",
+    ],
+    tags: ["breakfast", "quick", "vegetarian"],
+    createdAt: "2026-09-05T08:30:00.000Z",
+    updatedAt: "2026-09-05T08:30:00.000Z",
+  },
+  {
+    id: "3",
+    title: "Spicy Chicken Ramen",
+    description: "Rich, spicy broth with springy noodles, soft egg, and scallions.",
+    category: "Rice Bowl / Ramen / Noodle",
+    photoUrl:
+      "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=800&q=80",
+    ingredients: [
+      "2 portions ramen noodles",
+      "4 cups chicken broth",
+      "2 tbsp chili bean paste",
+      "1 chicken breast, sliced",
+      "2 soft-boiled eggs",
+      "Scallions and nori to serve",
+    ],
+    steps: [
+      "Simmer the broth with chili bean paste for 10 minutes.",
+      "Poach the sliced chicken in the broth until cooked.",
+      "Cook the noodles separately and drain.",
+      "Divide noodles into bowls and pour over the broth.",
+      "Top with chicken, halved eggs, scallions, and nori.",
+    ],
+    tags: ["japanese", "dinner", "spicy"],
+    createdAt: "2026-09-10T18:45:00.000Z",
+    updatedAt: "2026-09-10T18:45:00.000Z",
+  },
+  {
+    id: "4",
+    title: "Berry Pancakes",
+    description: "Fluffy buttermilk pancakes loaded with fresh berries and maple syrup.",
+    category: "Dessert",
+    photoUrl:
+      "https://images.unsplash.com/photo-1506084868230-bb9d95c24759?w=800&q=80",
+    ingredients: [
+      "1 1/2 cups flour",
+      "1 cup buttermilk",
+      "1 egg",
+      "2 tbsp sugar",
+      "1 tsp baking powder",
+      "Mixed berries",
+      "Maple syrup",
+    ],
+    steps: [
+      "Whisk dry ingredients, then stir in buttermilk and egg.",
+      "Rest the batter for 5 minutes.",
+      "Cook ladles of batter on a buttered griddle until bubbles form.",
+      "Flip and cook until golden.",
+      "Serve stacked with berries and maple syrup.",
+    ],
+    tags: ["breakfast", "sweet"],
+    createdAt: "2026-09-12T09:15:00.000Z",
+    updatedAt: "2026-09-12T09:15:00.000Z",
+  },
+  {
+    id: "5",
+    title: "Garlic Butter Steak",
+    description: "Seared ribeye basted in garlic, thyme, and butter.",
+    category: "Beef",
+    photoUrl:
+      "https://images.unsplash.com/photo-1600891964092-4316c288032e?w=800&q=80",
+    ingredients: [
+      "1 ribeye steak",
+      "2 tbsp butter",
+      "3 garlic cloves, smashed",
+      "Fresh thyme",
+      "Salt and pepper",
+    ],
+    steps: [
+      "Pat the steak dry and season generously.",
+      "Sear in a hot pan 3 minutes per side.",
+      "Add butter, garlic, and thyme; baste for 1–2 minutes.",
+      "Rest 5 minutes before slicing.",
+    ],
+    tags: ["dinner", "quick"],
+    createdAt: "2026-09-13T19:00:00.000Z",
+    updatedAt: "2026-09-13T19:00:00.000Z",
+  },
+  {
+    id: "6",
+    title: "Garlic Butter Shrimp",
+    description: "Juicy shrimp in a lemony garlic butter sauce.",
+    category: "Seafood",
+    photoUrl:
+      "https://images.unsplash.com/photo-1625944230945-1b7dd3b949ab?w=800&q=80",
+    ingredients: [
+      "500g shrimp, peeled",
+      "3 tbsp butter",
+      "4 garlic cloves, minced",
+      "1 lemon",
+      "Parsley",
+      "Salt and pepper",
+    ],
+    steps: [
+      "Melt butter and sauté garlic until fragrant.",
+      "Add shrimp and cook 2 minutes per side.",
+      "Squeeze in lemon juice and season.",
+      "Finish with chopped parsley.",
+    ],
+    tags: ["quick", "dinner"],
+    createdAt: "2026-09-14T18:20:00.000Z",
+    updatedAt: "2026-09-14T18:20:00.000Z",
+  },
+  {
+    id: "7",
+    title: "Hearty Vegetable Soup",
+    description: "A cozy pot of vegetables simmered in a savory broth.",
+    category: "Soup",
+    photoUrl:
+      "https://images.unsplash.com/photo-1547592166-23ac45744acd?w=800&q=80",
+    ingredients: [
+      "1 onion, diced",
+      "2 carrots, chopped",
+      "2 celery stalks, chopped",
+      "1 can diced tomatoes",
+      "4 cups vegetable broth",
+      "1 cup pasta or beans",
+    ],
+    steps: [
+      "Sauté onion, carrot, and celery until soft.",
+      "Add tomatoes and broth; bring to a boil.",
+      "Add pasta or beans and simmer until tender.",
+      "Season to taste and serve.",
+    ],
+    tags: ["comfort", "vegetarian"],
+    createdAt: "2026-09-15T12:00:00.000Z",
+    updatedAt: "2026-09-15T12:00:00.000Z",
+  },
+];

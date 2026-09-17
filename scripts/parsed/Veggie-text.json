@@ -1,0 +1,89 @@
+{
+  "category": "Veggie",
+  "delete": [],
+  "recipes": [
+    {
+      "title": "Braised Bok Choy with Dual Eggs in Broth (上湯金銀蛋浸白菜)",
+      "description": "上湯金銀蛋浸白菜 - bok choy poached in broth with salted and century egg.",
+      "ingredients": [
+        "White bok choy",
+        "Salted egg, 1 (white & yolk separated)",
+        "Century egg, 1",
+        "Dried prawns (or chicken broth), a good handful",
+        "Ginger, 3 slices",
+        "Boiling water, 500 ml",
+        "Chicken powder or salt",
+        "White pepper",
+        "Oil"
+      ],
+      "steps": [
+        "Prep: wash the bok choy; cube the century egg; separate the salted egg yolk and white (chop the yolk, lightly beat the white); slice the ginger.",
+        "Sear: heat oil in a deep pan and stir-fry the ginger and dried prawns until fragrant; add the salted egg yolk and century egg, sautéing ~1 minute until the yolk begins to foam.",
+        "Broth: pour in the boiling water to create a milky broth; season with chicken powder (or salt) and white pepper.",
+        "Simmer: add the bok choy, cover, and cook 2-3 minutes until tender.",
+        "Finish: turn off the heat, drizzle the salted egg white over the top, let it set a few seconds, gently stir, and serve."
+      ]
+    },
+    {
+      "title": "Gochujang cabbage",
+      "description": "Buttered gochujang cabbage. (The original saved only the ingredient list; the method below is a suggested standard preparation.)",
+      "ingredients": [
+        "1/2 pointed cabbage",
+        "1 generous tsp gochujang paste (more for spicier)",
+        "1 generous tbsp soft butter",
+        "4-5 tbsp water",
+        "Toasted sesame, for garnish"
+      ],
+      "steps": [
+        "Melt the butter with the gochujang and water in a pan to make a sauce.",
+        "Add the cabbage and cook, covered, until tender, tossing to coat.",
+        "Garnish with toasted sesame."
+      ]
+    },
+    {
+      "title": "Mash potato",
+      "description": "Creamy mashed potatoes.",
+      "ingredients": [
+        "2 lbs Yukon Gold potatoes",
+        "4 tbsp unsalted butter",
+        "1/2-3/4 cup heavy cream or whole milk",
+        "1 tsp salt (plus for the water)",
+        "1/2 tsp garlic powder",
+        "1/4 tsp pepper"
+      ],
+      "steps": [
+        "Cut the potatoes and boil in salted water until fork-tender.",
+        "Drain, then add the butter and warm cream.",
+        "Mash until smooth and season.",
+        "Tip: don't overmix."
+      ]
+    },
+    {
+      "title": "Miso creamy cabbage",
+      "description": "Roasted cabbage with creamy miso mushrooms.",
+      "ingredients": [
+        "8 green cabbage wedges (~1 3/4\" thick, core intact; half a head)",
+        "1 lb (450g) mixed mushrooms (enoki, shimeji, beech, oyster, shiitake, cremini, etc.)",
+        "2 tbsp butter",
+        "3 garlic cloves, minced",
+        "1/2 cup (120ml) water",
+        "1/4 cup (60ml) heavy cream",
+        "2 tbsp white or yellow miso paste",
+        "1/4 tsp soy sauce",
+        "Salt & pepper, to taste",
+        "Neutral oil",
+        "Chopped chives, for garnish"
+      ],
+      "steps": [
+        "Prep: preheat the oven to 375°F (190°C) and line two baking sheets with parchment (one for mushrooms, one for cabbage).",
+        "Roast the mushrooms: spread on a sheet, toss with neutral oil only (no seasoning), and set aside.",
+        "Cabbage (oven): place the wedges on the second sheet, drizzle generously with oil, and season both sides with salt and pepper.",
+        "Roast, timing both trays to finish together: cabbage 25-30 minutes flipping halfway (until the edges are charred and the center is tender); mushrooms 20 minutes tossing once (edges lightly seared).",
+        "Stovetop alternative for cabbage: heat a large skillet on medium to medium-high, add oil and 4 wedges, add 1/4 cup water, cover and steam 4 minutes until the water evaporates, then sear uncovered until golden, flip and sear the other side; repeat with the rest.",
+        "Make the sauce: over medium-low, sauté the butter and garlic a few seconds until lightly golden; add the water and miso and whisk smooth; add the cream and soy sauce; bring to a gentle simmer (don't hard-boil); toss the roasted mushrooms in to coat.",
+        "Assemble: place the cabbage on a plate, spoon the creamy miso mushrooms on top, and garnish with chives.",
+        "Notes: the mushrooms and cabbage can be made ahead; slightly undercooking prevents over-softening when reheating."
+      ]
+    }
+  ]
+}

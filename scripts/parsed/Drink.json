@@ -1,0 +1,27 @@
+{
+  "category": "Drink",
+  "delete": ["Sangria p2", "Sangria p3", "Sangria p4", "Sangria p5", "Sangria p6"],
+  "recipes": [
+    {
+      "title": "Sangria",
+      "description": "西班牙 Sangria (from an Orenji production video). Makes one pitcher.",
+      "photo": "https://lzhswerqfwzydlnjwfau.supabase.co/storage/v1/object/public/recipe-photos/drink/1YTbaC5cPvj52KUAojklwEOF0sLa5e0ua.jpg",
+      "ingredients": [
+        "紅酒 / Red wine 720ml (chilled)",
+        "雪碧 / Sprite 1 can (or 7 Up or soda water)",
+        "百蘭地或威士忌 / Brandy or Whisky 150ml",
+        "橙味甜酒 / Grand Marnier 150ml",
+        "橙 / Orange 1 pc (diced)",
+        "檸檬 / Lemon 1 pc (diced)",
+        "蘋果 / Apple 1 pc (diced)"
+      ],
+      "steps": [
+        "Dice the orange, lemon, and apple and put them in a pitcher — this fruit base is essential.",
+        "Pour in the chilled red wine, brandy (or whisky), and Grand Marnier over the fruit.",
+        "Top up with Sprite (or 7 Up / soda water).",
+        "Let it steep: a few hours minimum for a lighter infusion.",
+        "For a stronger flavor, cover and chill in the fridge longer before serving."
+      ]
+    }
+  ]
+}

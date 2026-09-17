@@ -1,0 +1,97 @@
+{
+  "category": "Pork",
+  "delete": [],
+  "recipes": [
+    {
+      "title": "Kimchi rib",
+      "description": "Kimchi stew with pork ribs. Use all the kimchi brine and don't add too much water or it turns into jjigae - start with 2 cups and add more if it gets low. Whole-cabbage kimchi gives the traditional long strips; a bagged half-cabbage is the perfect portion. Can substitute spam, beef, or other meats.",
+      "ingredients": [
+        "1 bag whole-cabbage kimchi, with the brine",
+        "1 tbsp sesame oil",
+        "2-3 cups water",
+        "1-2 tbsp Korean red pepper flakes (gochugaru)",
+        "2 tsp sugar",
+        "Pork ribs"
+      ],
+      "steps": [
+        "Parboil the ribs to remove impurities.",
+        "In a big pot, add the kimchi with its juice and the gochugaru; bring to a boil.",
+        "Add the ribs and cook on low heat 3-4 hours."
+      ]
+    },
+    {
+      "title": "RICE COOKER / IP KIMCHI ROLLED PORK BELLY",
+      "description": "Kimchi-rolled pork belly, rice cooker or Instant Pot. Serves 2 adults + 2 kids.",
+      "ingredients": [
+        "1.5-2 lbs pork belly, long strips",
+        "1/2 head whole-cabbage kimchi (older is better)",
+        "2-3 cups water (just enough to cover)",
+        "1 onion, halved (optional)",
+        "2 green onions, in 2-inch pieces (optional)",
+        "1 seafood stock powder or coin (optional)",
+        "Sauce: 3 tbsp gochugaru (Korean red pepper powder)",
+        "Sauce: 1 tbsp gochujang (Korean red pepper paste)",
+        "Sauce: 3 tbsp soy sauce",
+        "Sauce: 1 tbsp mirin",
+        "Sauce: 1 tbsp honey",
+        "Sauce: 3 tbsp garlic, minced",
+        "Sauce: 1 tsp ginger, minced",
+        "Sauce: 2 tbsp sesame oil",
+        "Sauce: 1 tbsp fish sauce"
+      ],
+      "steps": [
+        "Cut the pork belly strips into 3-inch pieces.",
+        "Cut the base off the cabbage kimchi. Lay out each long leaf and roll a pork belly piece up in it, starting from the bottom.",
+        "Place the kimchi-rolled pork in the Instant Pot or rice cooker in a single layer.",
+        "Add the sauce and pour in water just to cover; add the onion and green onions.",
+        "Instant Pot: high pressure 30 minutes, then manual release. Rice cooker: sticky white rice setting (high pressure, ~30-35 minutes).",
+        "Serve with rice."
+      ]
+    },
+    {
+      "title": "Shrimp paste pork jowl",
+      "description": "Steamed shrimp-paste pork jowl. Future idea: put vermicelli noodles underneath to soak up the fat.",
+      "ingredients": [
+        "Pork jowl, in bigger pieces",
+        "Shrimp paste (蝦醬)"
+      ],
+      "steps": [
+        "Marinate the pork jowl in shrimp paste for 30 minutes (don't go past 1 hour or it gets too salty).",
+        "Steam for 9 minutes."
+      ]
+    },
+    {
+      "title": "東坡肉薯蓉",
+      "description": "東坡肉佐薯蓉 - Dongpo braised pork belly with mashed potato. Serves 4 (~994 kcal each: 22P / 9C / 93F).",
+      "ingredients": [
+        "五花肉 / Pork belly, 700g",
+        "Garlic, 8 cloves",
+        "Chilies, 2",
+        "Ginger, 5 slices",
+        "Erythritol (sugar substitute), 3 tbsp",
+        "Soy sauce, 200ml",
+        "Thick soy sauce (醬油膏), 1 tbsp",
+        "Rice wine, 100ml",
+        "Huadiao wine (花雕酒), 80ml",
+        "White pepper, a little",
+        "Potato, 1",
+        "Sesame oil, a little",
+        "Daikon radish (白蘿蔔), 1",
+        "Choy sum (菜心), 3 stalks"
+      ],
+      "steps": [
+        "Pan-fry the pork belly in a dry hot pan until golden.",
+        "In the same pan, sauté the aromatics and add the sweetener; sauté until fragrant, then remove and set aside.",
+        "Add 1500ml water, return the pork, and add the soy sauce, thick soy sauce, rice wine, huadiao wine, and white pepper; bring to a boil then simmer on low ~90 minutes.",
+        "Cut the cooked pork into two portions, return to the pot, and simmer another 30-60 minutes.",
+        "Boil the potato until soft, then mash it.",
+        "Mix 2 tbsp of the mashed potato with the braising sauce until smooth; set aside.",
+        "Cut the daikon into pieces and pan-fry in sesame oil over medium-high until golden on both sides; remove.",
+        "Add the fried daikon into the braising sauce.",
+        "Blanch the choy sum.",
+        "Take 2 ladles of braising sauce and reduce over medium-high until thick.",
+        "Plate and serve."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,166 @@
+{
+  "category": "Beef",
+  "delete": ["Pot Roast with Red wine 2", "Viet Tomato finger rib 2"],
+  "recipes": [
+    {
+      "title": "Beef Brisket Dice",
+      "ingredients": [
+        "1 lb beef brisket / tendon",
+        "Carrot (optional)",
+        "Potato (optional)",
+        "3 pieces ginger",
+        "6 garlic",
+        "3 star anise",
+        "2 bay leaf",
+        "2 small pieces rock sugar",
+        "1 tbsp soy sauce",
+        "1 tbsp dark soy sauce (老抽)",
+        "1 tbsp chu hou sauce (柱侯醬)",
+        "1 tbsp oyster sauce",
+        "1 tsp salt"
+      ],
+      "steps": [
+        "Soak beef in salt + water for 10 min.",
+        "Fry to cook beef with oil.",
+        "In a new pot, add beef and all seasoning.",
+        "Cover with water for 40 min on low heat (or use Instant Pot, then reduce after).",
+        "Add carrot and potato, cover 20 min. Finish."
+      ]
+    },
+    {
+      "title": "Beef Brisket Tendon Pot",
+      "ingredients": [
+        "1 lb brisket",
+        "1 lb tendon",
+        "2 tbsp dark soy",
+        "2 tbsp light soy",
+        "2 tbsp chu hou sauce",
+        "1 tbsp cooking wine",
+        "2 piece fermented tofu",
+        "2 tbsp satay sauce (沙嗲)",
+        "2 pieces ginger",
+        "2 pieces star anise (add later)",
+        "2 tbsp rock sugar (add later)",
+        "4 bay leaves (add later)",
+        "Salt (add later)"
+      ],
+      "steps": [
+        "Fry ginger.",
+        "Fry brisket and tendon.",
+        "Add sauce: dark soy, light soy, chu hou sauce, cooking wine, fermented tofu, and satay sauce.",
+        "Add star anise, rock sugar, and bay leaves later; add salt later. Simmer until tender."
+      ]
+    },
+    {
+      "title": "Korean Short Rib",
+      "ingredients": [
+        "3 lbs short rib",
+        "1 pear or apple",
+        "1 onion",
+        "4 clove garlic",
+        "1/2 tablespoon chopped ginger",
+        "1 cup soy sauce (divided 3/4 + 1/4)",
+        "1/4 cup water",
+        "2 tablespoon sesame oil (divided)",
+        "1 teaspoon black pepper",
+        "1/4 cup sugar",
+        "1/4 cup rice wine",
+        "2 carrot, peeled / chunked",
+        "5 radish"
+      ],
+      "steps": [
+        "Soak rib 1 hr (up to 4 hr).",
+        "Blend 3/4 of the soy, rice wine, water, sugar, 1 tablespoon sesame oil, and pepper to make the sauce.",
+        "Drain rib and trim fat.",
+        "Instant Pot 35 min on high with veggies and sauce.",
+        "Natural decompress. Transfer meat and veggies out; reduce and add the rest of the sauce.",
+        "Mix sauce in after."
+      ]
+    },
+    {
+      "title": "Pot Roast with Red Wine",
+      "ingredients": [
+        "1 tablespoon oil",
+        "6 slice bacon",
+        "3 lb chuck beef, 2-inch cube",
+        "1 cup red wine or chicken stock",
+        "2 cup beef broth",
+        "1/2 cup tomato paste",
+        "1 beef bouillon cube, crushed",
+        "1/4 cup flour (only if you need to thicken)",
+        "2 carrot, 2-inch pieces",
+        "1 onion",
+        "1 tablespoon garlic",
+        "2 tablespoon fresh thyme",
+        "1 lb baby potato",
+        "8 ounce fresh mushroom",
+        "1-2 teaspoon salt",
+        "1/2 teaspoon pepper"
+      ],
+      "steps": [
+        "Instant Pot sauté with oil; sear bacon 4 min, then drain on paper towel.",
+        "Add beef to pot, sear 3-4 min.",
+        "Add red wine, reduce 5 min; add beef broth, tomato paste, and bouillon.",
+        "Stir; add bacon, carrot, onion, garlic, thyme, potato, mushroom, salt & pepper. Pressure cook / manual 45 min.",
+        "Natural release 10 min, switch to vent, then set to sauté to thicken 5-10 min.",
+        "Stir and add salt & pepper if needed.",
+        "Note: use large chunks (not pre-cut), use large carrots, and sear on the pan with salt & pepper."
+      ]
+    },
+    {
+      "title": "Skirt Steak with wasabi fish sauce",
+      "ingredients": [
+        "1 slice skirt steak (from Costco)",
+        "Steak seasoning",
+        "Mesquite seasoning",
+        "Lemon juice",
+        "2 part soy sauce (for sauce)",
+        "1 part fish sauce (for sauce)",
+        "Wasabi (for sauce)"
+      ],
+      "steps": [
+        "Season steak with Mesquite spice and lemon juice, 5-10 min.",
+        "Grill on a cast iron pan. Don't overcook; use palm-tenderness to check and compare.",
+        "Make sauce: 2 part soy sauce, 1 part fish sauce, mix in wasabi.",
+        "Remove and rest 8-10 min. Slice against the grain, as thin as possible.",
+        "Sauce on top or use as dip."
+      ]
+    },
+    {
+      "title": "Viet Tomato finger rib",
+      "photo": "https://lzhswerqfwzydlnjwfau.supabase.co/storage/v1/object/public/recipe-photos/beef/1o21vexMFDcABBe9BdNh6StyMmMqb1AsX.jpg",
+      "ingredients": [
+        "1 pack beef finger rib",
+        "1 onion",
+        "1 shallot",
+        "4 lemongrass",
+        "6 carrot",
+        "2 piece ginger",
+        "6 piece star anise",
+        "8 piece bay leaves",
+        "2 can tomato paste",
+        "1 can diced tomato",
+        "3 piece rock sugar",
+        "3 tbsp fish sauce"
+      ],
+      "steps": [
+        "Cut onions and carrot.",
+        "Smack the lemongrass.",
+        "In a pan, sear the finger rib on all sides.",
+        "Remove the finger rib.",
+        "Sear ginger, lemongrass, and onion; cook till soft on medium heat.",
+        "Cook star anise with the onion.",
+        "Add both cans of tomato paste, mix.",
+        "Change from pan to pot.",
+        "Add the canned tomato; add some water if needed (should be somewhat sticky).",
+        "Add beef.",
+        "Add bay leaves.",
+        "Add carrot and rock sugar.",
+        "Small flame, 1 hr.",
+        "Add 3 tablespoon fish sauce.",
+        "Add pepper.",
+        "Note: about 30 min to cook, then another hr."
+      ]
+    }
+  ]
+}

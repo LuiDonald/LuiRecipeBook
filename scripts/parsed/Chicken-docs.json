@@ -1,0 +1,40 @@
+{
+  "category": "Chicken",
+  "delete": [],
+  "recipes": [
+    {
+      "title": "Karage",
+      "description": "Japanese karaage (from foodie_siulok). Use potato starch or corn starch, and rice bran oil.",
+      "ingredients": [
+        "Chicken marinade: grated ginger",
+        "Chicken marinade: sake",
+        "Chicken marinade: white pepper",
+        "Chicken marinade: soy sauce",
+        "Chicken marinade: salt (or chicken powder) *optional",
+        "Potato starch or corn starch (for coating)",
+        "Rice bran oil (for frying)"
+      ],
+      "steps": [
+        "Marinate the chicken with grated ginger, sake, white pepper, soy sauce, and optional salt/chicken powder.",
+        "Put the potato/corn starch into the cold oil first (首先將玉米粉放入冷油).",
+        "Fry the chicken.",
+        "Before frying the second batch, add a little more corn starch (炸第二round之前，再落多少少玉米粉)."
+      ]
+    },
+    {
+      "title": "Viet chicken thigh marinate",
+      "description": "Vietnamese-style chicken thigh marinade.",
+      "ingredients": [
+        "Frozen lemongrass",
+        "Garlic powder",
+        "Lemon",
+        "Fish sauce",
+        "Soy sauce",
+        "Brown sugar"
+      ],
+      "steps": [
+        "Combine frozen lemongrass, garlic powder, lemon, fish sauce, soy sauce, and brown sugar with the chicken thighs and marinate."
+      ]
+    }
+  ]
+}

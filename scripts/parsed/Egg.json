@@ -1,0 +1,74 @@
+{
+  "category": "Egg",
+  "delete": [],
+  "recipes": [
+    {
+      "title": "Advance egg Omelette",
+      "description": "Tamagoyaki (from justonecookbook.com/tamagoyaki/).",
+      "ingredients": [
+        "3 large eggs (50 g each w/o shell)",
+        "1/2 Tbsp sugar (up to 1 Tbsp for a sweeter tamagoyaki)",
+        "1 pinch salt",
+        "1 tsp usukuchi (light-colored) soy sauce (or regular soy sauce)",
+        "1 Tbsp water (optional, for a fluffier omelette)",
+        "For cooking: 1 Tbsp neutral oil (plus more if needed)"
+      ],
+      "steps": [
+        "Gather all the ingredients. Can be made with a tamagoyaki pan or a carbon steel frying pan (a nonstick pan is easier).",
+        "Beat the eggs with the sugar, salt, soy sauce, and water.",
+        "Oil the pan, pour in a thin layer of egg, and as it sets roll it up; repeat with more egg, rolling each new layer onto the previous, until all the egg is used."
+      ]
+    },
+    {
+      "title": "Egg omelette",
+      "description": "Tamagoyaki - Japanese rolled omelette (from justonecookbook.com/tamagoyaki-japanese-rolled-omelette/).",
+      "ingredients": [
+        "3 large eggs (50 g each w/o shell)",
+        "3 Tbsp dashi (Japanese soup stock)",
+        "2 tsp sugar",
+        "1 tsp soy sauce",
+        "1 tsp mirin",
+        "2 pinches kosher salt",
+        "For cooking: 2 Tbsp neutral oil",
+        "For cooking: 1 1/2 sheets nori (dried laver seaweed), optional",
+        "Garnish: 3 oz daikon radish",
+        "Garnish: soy sauce"
+      ],
+      "steps": [
+        "Beat the eggs with the dashi, sugar, soy sauce, mirin, and salt.",
+        "Oil the pan and cook the egg in thin layers, rolling each layer up as it sets (optionally layering in nori).",
+        "Serve with grated daikon radish and soy sauce."
+      ]
+    },
+    {
+      "title": "Ajitama",
+      "description": "Soy-marinated soft-boiled eggs. After 4 days, need to be removed from the sauce or else it's too much (too salty).",
+      "ingredients": [
+        "6 eggs = 1 serving",
+        "1 tsp sugar",
+        "1/4 (cup) soy sauce",
+        "1/4 (cup) mirin"
+      ],
+      "steps": [
+        "Boil the eggs (6:30 gives a runny yolk that takes 4 days to become jelly).",
+        "Mix soy sauce + dark soy sauce to be less salty.",
+        "Marinate the eggs in the sauce.",
+        "Remove from the sauce after 4 days so it doesn't get too salty.",
+        "Notes - 6:30 heated in pot: okay, not the best. 7 min: used brown sugar, did not heat up. Test 2: 12 eggs, 4/6 tsp sugar, 3/4 cup soy sauce, 3/4 cup mirin."
+      ]
+    },
+    {
+      "title": "Steam Egg",
+      "ingredients": [
+        "Egg and water, 1:1 ratio",
+        "Shrimp (optional)"
+      ],
+      "steps": [
+        "Mix egg and water 1:1, then use a colander/strainer to remove suds and bubbles.",
+        "Can season shrimp and add to the egg.",
+        "Saran wrap the plate before steaming for a smooth surface.",
+        "Steam the egg on high for 4 min, then close the cover for 5 min."
+      ]
+    }
+  ]
+}

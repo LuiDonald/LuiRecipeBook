@@ -1,0 +1,32 @@
+{
+  "category": "Pork",
+  "delete": [],
+  "recipes": [
+    {
+      "title": "Air fry honey pork belly",
+      "description": "The Best Air Fryer Honey Glazed Pork Belly Bites (from thesavorychopstick). Only ~5 min prep.",
+      "ingredients": [
+        "3-3.5 lbs pork belly - without skin (cut into 1\" cubes)",
+        "1 tbsp garlic powder",
+        "1 tsp salt",
+        "2 tbsp brown sugar",
+        "1/4 cup honey",
+        "1/4 cup hoisin sauce",
+        "1/4 cup oyster sauce",
+        "1 tbsp dark soy sauce",
+        "2 tbsp soy sauce (low sodium or regular)",
+        "1 tsp five spice powder",
+        "1 tbsp sesame oil",
+        "1 tbsp cooking wine"
+      ],
+      "steps": [
+        "Cut the pork belly into 1\" cubes. For best marinade absorption, poke holes with a fork or meat tenderizer on 2 sides of the meat.",
+        "Set aside 5 tbsp of the marinade for basting.",
+        "Marinate the pork belly in the rest of the marinade.",
+        "Air fry at 375°F, adjusting the heat up when the bites are almost done to char the meat.",
+        "Cook 12-15 min depending on your air fryer and the size of the pieces - check at the halfway point.",
+        "Baste with the reserved marinade."
+      ]
+    }
+  ]
+}

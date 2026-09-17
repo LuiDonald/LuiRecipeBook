@@ -1,0 +1,28 @@
+{
+  "category": "Seafood",
+  "delete": [],
+  "recipes": [
+    {
+      "title": "Whole shrimp garlic butter",
+      "description": "蒜香奶油明蝦 - garlic butter prawns (from yuyuan_hsu).",
+      "ingredients": [
+        "明蝦 / Large prawns 1 catty (~8-10 pcs)",
+        "蒜頭 / Garlic 2 spoons (~30g)",
+        "奶油 / Butter 15g",
+        "橄欖油 / Olive oil 15g",
+        "白葡萄酒 / White wine 100ml",
+        "鮮奶油 / Heavy cream 100ml",
+        "帕馬森起司 / Parmesan cheese, a little",
+        "歐芹碎 / Chopped parsley, a little",
+        "Salt & black pepper to taste"
+      ],
+      "steps": [
+        "Prep the prawns: trim the whiskers, press the head to remove the vein, and cut the belly down to the bottom so they peel easily when eating. Pat dry.",
+        "Heat a pan with olive oil and butter, add the minced garlic and stir on low heat until fragrant.",
+        "Arrange the prawns neatly, sear briefly, then pour in the white wine, cover, and simmer 2 min.",
+        "Open the lid, flip the prawns, and add the heavy cream. Season with salt and black pepper.",
+        "Reduce the sauce slightly, then plate and garnish with shaved parmesan and chopped parsley."
+      ]
+    }
+  ]
+}

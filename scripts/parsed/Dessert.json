@@ -1,0 +1,46 @@
+{
+  "category": "Dessert",
+  "delete": [],
+  "recipes": [
+    {
+      "title": "Basque Cheesecake",
+      "ingredients": [
+        "1.5 lbs cream cheese",
+        "1 1/2 cup sugar",
+        "5 eggs",
+        "1/2 cup heavy cream",
+        "1/2 tsp salt",
+        "1 tsp vanilla extract"
+      ],
+      "steps": [
+        "Pre-heat oven to 475°F.",
+        "Line up parchment paper on cake pan.",
+        "Add softened cheese and sugar, mix.",
+        "In a bowl, mix eggs.",
+        "Slowly add eggs to cream cheese mix. Mix until smooth.",
+        "Add cream, salt, vanilla.",
+        "Pour into pan, tap bottom to avoid air bubbles.",
+        "Bake 45-55 min or until top is dark. Center should be 155°F.",
+        "Remove, cool at room temp (few hours). Cool in fridge for at least 1 hr before slicing."
+      ]
+    },
+    {
+      "title": "PootJaiGo",
+      "description": "缽仔糕 - steamed rice cake in bowls.",
+      "ingredients": [
+        "85 g rice flour",
+        "55 g wheat starch",
+        "110 g sugar",
+        "2 cup water",
+        "Red bean"
+      ],
+      "steps": [
+        "Mix rice flour and wheat starch with 1/2 cup water.",
+        "Use 1 1/2 cup water to dissolve the sugar (boil, then medium).",
+        "Pour the flour mix into the sugar water.",
+        "Stir.",
+        "Transfer to tray and cups. Heat up the wok first, then pour in and steam on high 10 min; at 8 min add red bean."
+      ]
+    }
+  ]
+}

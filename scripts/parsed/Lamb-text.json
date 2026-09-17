@@ -1,0 +1,16 @@
+{
+  "category": "Lamb",
+  "delete": [],
+  "recipes": [
+    {
+      "title": "Lamb time",
+      "description": "Lamb doneness notes.",
+      "ingredients": ["Lamb"],
+      "steps": [
+        "Oven: pull at 126°F for medium-rare.",
+        "Rest 12 minutes.",
+        "Needs a lot more seasoning."
+      ]
+    }
+  ]
+}

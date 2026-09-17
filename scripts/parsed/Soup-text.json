@@ -1,0 +1,22 @@
+{
+  "category": "Soup",
+  "delete": [],
+  "recipes": [
+    {
+      "title": "carrot leek mushroom soup",
+      "description": "Carrot, leek, and mushroom soup.",
+      "ingredients": [
+        "1 long leek",
+        "1 carrot",
+        "Mushrooms, half a pack",
+        "1700ml water",
+        "2 tsp salt"
+      ],
+      "steps": [
+        "Dice everything up.",
+        "Bring to a simmer, half-cover, and cook on low heat for 45 minutes.",
+        "Add 2 tsp salt."
+      ]
+    }
+  ]
+}

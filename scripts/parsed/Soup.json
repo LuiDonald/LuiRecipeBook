@@ -1,0 +1,25 @@
+{
+  "category": "Soup",
+  "delete": [],
+  "recipes": [
+    {
+      "title": "Soup, chinese herb and chicken",
+      "description": "黨參當歸雞 - Dang Shen (codonopsis) and Dang Gui (angelica) chicken soup.",
+      "ingredients": [
+        "5 slice 當歸 (dang gui / angelica root)",
+        "2 pieces 黨參 (dang shen / codonopsis root)",
+        "1 tbsp 杞子 (goji berries) / 南北杏 (north & south almonds)",
+        "1 whole old chicken",
+        "8 cup water",
+        "Salt to taste",
+        "2 dried mushroom (冬菇)",
+        "2 pieces lotus root"
+      ],
+      "steps": [
+        "Add all ingredients to an Instant Pot: 30 min soup setting.",
+        "Let it decompress, then saute on high 20 min.",
+        "Salt to taste."
+      ]
+    }
+  ]
+}

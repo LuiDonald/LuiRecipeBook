@@ -1,0 +1,76 @@
+{
+  "category": "Lamb",
+  "delete": ["Lamb stew pot 2"],
+  "recipes": [
+    {
+      "title": "Lamb Chop pan fried",
+      "ingredients": [
+        "3 pieces lamb rack",
+        "Pepper (season)",
+        "White pepper (season)",
+        "Salt (season)",
+        "Olive vinegar / lemon juice, a few drops (rub)",
+        "2 tablespoon olive oil",
+        "Butter",
+        "Cooking wine (1 shot)",
+        "Worcestershire sauce (a few drops)",
+        "Broccoli (side)"
+      ],
+      "steps": [
+        "Use a knife to poke holes on the surface. Marinate 1 hr (can marinate overnight).",
+        "Put oil on small fire, fat side down; roast the fat side down 1-2 min.",
+        "Large fire, 1 min on one side, flip, 1 min on the other side.",
+        "Add some cooking wine (1 shot), let it evaporate.",
+        "Add Worcestershire sauce, a few drops.",
+        "Add butter, let it melt, and done.",
+        "Rest lamb chop 5 min.",
+        "Save the sauce for the top."
+      ]
+    },
+    {
+      "title": "Lamb stew pot",
+      "ingredients": [
+        "2 lbs lamb belly (羊腩)",
+        "10 mushroom",
+        "Fried bean curd sticks (炸支竹)",
+        "Bamboo fungus (竹笙)",
+        "Water chestnut (馬蹄), a few",
+        "Celery (芹菜)",
+        "~10 shallot",
+        "2 lemongrass",
+        "1 piece dried tangerine peel (陳皮)",
+        "15 slice ginger",
+        "2 thumb-size rock sugar",
+        "Chinese cooking wine",
+        "1 piece fermented red bean curd (南乳)",
+        "2 tablespoon chu hou sauce (柱侯醬)",
+        "2 tablespoon sesame paste (芝麻醬)",
+        "3 tablespoon oyster sauce (蠔油)",
+        "Fermented tofu (腐乳), for sauce",
+        "1/2 teaspoon sugar (dip sauce)",
+        "1 teaspoon sesame oil (dip sauce)"
+      ],
+      "steps": [
+        "Torch the skin (lamb from freezer). Use salt to defrost, in salt water.",
+        "Dry and remove water.",
+        "Wok, fry lamb skin-side down (push method, no oil).",
+        "Keep high fire, add some cooking wine, evaporate.",
+        "Add cold water, wait till boil, 5 min after boil.",
+        "Rinse, pour off water, dry the lamb.",
+        "Pan hot, oil, fry ginger, celery, and shallot.",
+        "Mix all the sauce, turn heat to low. Cook all till bubbling.",
+        "Add lamb, small fire.",
+        "Add some cooking wine.",
+        "Add boiled water to cover the lamb, then add all the water.",
+        "Cover 30 min, then add mushroom, bamboo fungus, rock sugar, and dried tangerine peel; small fire, then 20 min again.",
+        "Add fermented tofu; for the dip sauce use 1/2 teaspoon sugar, 1 teaspoon sesame oil, and lemongrass cut into strings.",
+        "Small fire 25 min.",
+        "Add salt if needed.",
+        "10 min small fire, then 30 min with the fire off.",
+        "Start the fire, bring to a boil.",
+        "Transfer to a small pot.",
+        "Boil."
+      ]
+    }
+  ]
+}
