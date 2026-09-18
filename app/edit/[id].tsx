@@ -175,14 +175,16 @@ export default function EditRecipeScreen() {
           <View style={styles.pasteCard}>
             <Text style={styles.pasteTitle}>✨ Paste a recipe to auto-fill</Text>
             <Text style={styles.pasteHint}>
-              Paste a full recipe, an Instagram caption, or an Instagram link,
-              then tap the button. Review the fields below before saving.
+              Paste a full recipe or an Instagram caption, then tap the button.
+              Instagram links are best-effort — if one can't be fetched, just
+              copy the caption and paste that instead. Review the fields before
+              saving.
             </Text>
             <TextInput
               style={[styles.input, styles.pasteInput]}
               value={pasteText}
               onChangeText={setPasteText}
-              placeholder="Paste recipe text, a caption, or an Instagram link…"
+              placeholder="Paste recipe text or a caption (Instagram link = best-effort)…"
               placeholderTextColor={colors.textMuted}
               multiline
             />
