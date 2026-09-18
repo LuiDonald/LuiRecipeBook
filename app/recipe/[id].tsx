@@ -53,6 +53,19 @@ export default function RecipeDetailScreen() {
       <Stack.Screen
         options={{
           title: recipe.title || "Recipe",
+          // Explicit back control so it also shows on web and after saving
+          // a new recipe (returns to the previous screen, or home).
+          headerLeft: () => (
+            <Pressable
+              onPress={() =>
+                router.canGoBack() ? router.back() : router.replace("/")
+              }
+              hitSlop={12}
+              style={styles.backBtn}
+            >
+              <Text style={styles.backText}>‹ Back</Text>
+            </Pressable>
+          ),
           headerRight: isEditor
             ? () => (
                 <Pressable
@@ -139,6 +152,8 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   centered: { flex: 1, alignItems: "center", justifyContent: "center" },
+  backBtn: { paddingHorizontal: spacing.sm },
+  backText: { color: colors.primary, fontSize: 16, fontWeight: "600" },
   headerAction: { color: colors.primary, fontSize: 16, fontWeight: "600" },
   hero: { width: "100%", height: 240, backgroundColor: colors.primarySoft },
   heroPlaceholder: { alignItems: "center", justifyContent: "center" },
