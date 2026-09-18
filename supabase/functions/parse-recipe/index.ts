@@ -11,6 +11,7 @@
 // or `supabase secrets set`):
 //   OPENAI_API_KEY = sk-...
 //   OWNER_EMAIL    = donaldtlui@gmail.com   (optional but recommended)
+//   OPENAI_MODEL   = gpt-4o                 (optional; swap models w/o redeploy)
 //
 // Deploy:
 //   Dashboard: create a function named "parse-recipe" and paste this file, OR
@@ -66,8 +67,68 @@ Rules:
 - "tags": a few lowercase keywords (cuisine, meal type, technique). [] if unsure.
 - "category": choose the single best fit from this list, or "" if unclear: ${CATEGORIES.join(", ")}.
 - PRESERVE the original language(s) of the content. Do NOT translate. If the text mixes languages (e.g. Chinese + English), keep it as written.
+- Keep each quantity attached to its ingredient on the same line (e.g. "3 tbsp butter", not "3 tbsp" and "butter" separately). Preserve loose amounts like "a squeeze of lemon".
 - Strip hashtags, @mentions, emojis used as spam, "follow for more", links, and other promotional filler.
 - If the input is clearly NOT a recipe, return the shape with empty string/array values.`;
+
+// A couple of worked examples so the model learns the exact style we want:
+// clean quantities, stripped caption spam, and preserved bilingual text.
+const FEWSHOT: { role: "user" | "assistant"; content: string }[] = [
+  {
+    role: "user",
+    content:
+      "OMG you NEED to try this 🔥🔥 Garlic Butter Shrimp!! 😍 #seafood #easydinner\n\nGrab: half a pound of shrimp, 3 tbsp butter, 4 garlic cloves, a squeeze of lemon, salt + parsley.\n\nMelt the butter, toss in garlic for like 30 sec, add shrimp 2 min each side, finish w/ lemon + parsley. Follow for more 👉",
+  },
+  {
+    role: "assistant",
+    content: JSON.stringify({
+      title: "Garlic Butter Shrimp",
+      description: "Quick garlic butter shrimp finished with lemon and parsley.",
+      ingredients: [
+        "1/2 lb shrimp",
+        "3 tbsp butter",
+        "4 garlic cloves, minced",
+        "A squeeze of lemon",
+        "Salt",
+        "Parsley",
+      ],
+      steps: [
+        "Melt the butter in a pan.",
+        "Add the garlic and cook about 30 seconds.",
+        "Add the shrimp and cook 2 minutes per side.",
+        "Finish with lemon juice and parsley.",
+      ],
+      tags: ["seafood", "easy dinner"],
+      category: "Seafood",
+    }),
+  },
+  {
+    role: "user",
+    content:
+      "可樂雞翼 Coca-Cola Chicken Wings\n材料：雞翼10隻、可樂1罐、薑、蔥、豉油2湯匙\n做法：雞翼煎香，落薑蔥爆香，加可樂同豉油煮10分鐘收汁。",
+  },
+  {
+    role: "assistant",
+    content: JSON.stringify({
+      title: "可樂雞翼 (Coca-Cola Chicken Wings)",
+      description: "",
+      ingredients: [
+        "雞翼 10隻",
+        "可樂 1罐",
+        "薑",
+        "蔥",
+        "豉油 2湯匙",
+      ],
+      steps: [
+        "雞翼煎香。",
+        "落薑、蔥爆香。",
+        "加可樂同豉油，煮10分鐘收汁。",
+      ],
+      tags: ["chicken"],
+      category: "Chicken",
+    }),
+  },
+];
 
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
@@ -114,6 +175,9 @@ Deno.serve(async (req: Request) => {
   const apiKey = Deno.env.get("OPENAI_API_KEY");
   if (!apiKey) return json({ error: "OPENAI_API_KEY not configured" }, 500);
 
+  // Model is swappable via the OPENAI_MODEL secret (no code redeploy needed).
+  const model = Deno.env.get("OPENAI_MODEL") ?? "gpt-4o";
+
   // --- OpenAI ---
   let aiRes: Response;
   try {
@@ -124,11 +188,12 @@ Deno.serve(async (req: Request) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "gpt-4o-mini",
+        model,
         temperature: 0.2,
         response_format: { type: "json_object" },
         messages: [
           { role: "system", content: SYSTEM_PROMPT },
+          ...FEWSHOT,
           { role: "user", content: text },
         ],
       }),
