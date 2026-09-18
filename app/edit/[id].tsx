@@ -18,6 +18,7 @@ import { CATEGORIES } from "../../src/data/categories";
 import { pickImageFromLibrary, takePhoto } from "../../src/lib/imagePicker";
 import { isSupabaseConfigured } from "../../src/lib/supabase";
 import { useAuth } from "../../src/lib/auth";
+import { parseRecipeText } from "../../src/lib/parseRecipe";
 import { isLocalPhoto } from "../../src/lib/storage";
 import { colors, maxContentWidth, radius, spacing } from "../../src/lib/theme";
 
@@ -58,8 +59,41 @@ export default function EditRecipeScreen() {
   );
   const [tagsText, setTagsText] = useState(existing?.tags.join(", ") ?? "");
   const [saving, setSaving] = useState(false);
+  const [pasteText, setPasteText] = useState("");
+  const [parsing, setParsing] = useState(false);
 
   const patch = (p: Partial<RecipeDraft>) => setDraft((d) => ({ ...d, ...p }));
+
+  const onParse = async () => {
+    if (!pasteText.trim()) return;
+    setParsing(true);
+    try {
+      const p = await parseRecipeText(pasteText);
+      const gotSomething =
+        p.title || p.ingredients.length || p.steps.length;
+      if (!gotSomething) {
+        Alert.alert(
+          "No recipe found",
+          "That text didn't look like a recipe. Try pasting the full recipe or caption."
+        );
+        return;
+      }
+      setDraft((d) => ({
+        ...d,
+        title: p.title || d.title,
+        description: p.description || d.description,
+        category: p.category || d.category,
+        ingredients: p.ingredients.length ? p.ingredients : d.ingredients,
+        steps: p.steps.length ? p.steps : d.steps,
+        tags: p.tags.length ? p.tags : d.tags,
+      }));
+      if (p.tags.length) setTagsText(p.tags.join(", "));
+    } catch (e: any) {
+      Alert.alert("Couldn't parse", e?.message ?? "Unknown error");
+    } finally {
+      setParsing(false);
+    }
+  };
 
   const willUploadPhoto =
     isSupabaseConfigured && !!draft.photoUrl && isLocalPhoto(draft.photoUrl);
@@ -135,6 +169,37 @@ export default function EditRecipeScreen() {
         }}
       />
       <ScrollView contentContainerStyle={styles.content}>
+        {/* Paste-to-autofill */}
+        {isSupabaseConfigured && (
+          <View style={styles.pasteCard}>
+            <Text style={styles.pasteTitle}>✨ Paste a recipe to auto-fill</Text>
+            <Text style={styles.pasteHint}>
+              Paste a full recipe or an Instagram caption, then tap Parse.
+              Review the fields below before saving.
+            </Text>
+            <TextInput
+              style={[styles.input, styles.pasteInput]}
+              value={pasteText}
+              onChangeText={setPasteText}
+              placeholder="Paste recipe text or a caption here…"
+              placeholderTextColor={colors.textMuted}
+              multiline
+            />
+            <Pressable
+              style={[
+                styles.parseBtn,
+                (parsing || !pasteText.trim()) && { opacity: 0.6 },
+              ]}
+              onPress={onParse}
+              disabled={parsing || !pasteText.trim()}
+            >
+              <Text style={styles.parseBtnText}>
+                {parsing ? "Parsing…" : "Parse & fill"}
+              </Text>
+            </Pressable>
+          </View>
+        )}
+
         {/* Photo */}
         {draft.photoUrl ? (
           <Image source={{ uri: draft.photoUrl }} style={styles.photo} />
@@ -315,6 +380,26 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   headerAction: { color: colors.primary, fontSize: 16, fontWeight: "700" },
+  pasteCard: {
+    backgroundColor: colors.primarySoft,
+    borderRadius: radius.md,
+    padding: spacing.md,
+    gap: spacing.sm,
+  },
+  pasteTitle: { fontSize: 15, fontWeight: "700", color: colors.primary },
+  pasteHint: { fontSize: 13, color: colors.textMuted, lineHeight: 18 },
+  pasteInput: {
+    minHeight: 90,
+    textAlignVertical: "top",
+    backgroundColor: colors.card,
+  },
+  parseBtn: {
+    backgroundColor: colors.primary,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.md,
+    alignItems: "center",
+  },
+  parseBtnText: { color: "#fff", fontWeight: "700", fontSize: 15 },
   photo: {
     width: "100%",
     height: 200,
