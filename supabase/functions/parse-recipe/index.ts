@@ -130,6 +130,83 @@ const FEWSHOT: { role: "user" | "assistant"; content: string }[] = [
   },
 ];
 
+// --- Instagram caption fetching (best-effort) ---
+
+/** Pull the shortcode out of an Instagram post/reel/tv URL, if present. */
+function instagramShortcode(input: string): string | null {
+  const m = input.match(
+    /instagram\.com\/(?:[^/]+\/)?(?:p|reel|reels|tv)\/([A-Za-z0-9_-]+)/i
+  );
+  return m ? m[1] : null;
+}
+
+function decodeEntities(s: string): string {
+  return s
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<[^>]+>/g, "")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#(?:0?39|x27);/gi, "'")
+    .replace(/&#x([0-9a-f]+);/gi, (_, h) => String.fromCodePoint(parseInt(h, 16)))
+    .replace(/&#(\d+);/g, (_, d) => String.fromCodePoint(parseInt(d, 10)));
+}
+
+/** Try several strategies to pull the caption text out of the embed HTML. */
+function captionFromEmbedHtml(html: string): string {
+  // 1) GraphQL caption JSON embedded in the page.
+  const g = html.match(
+    /"edge_media_to_caption":\{"edges":\[\{"node":\{"text":"((?:[^"\\]|\\.)*)"/
+  );
+  if (g?.[1]) {
+    try {
+      const t = JSON.parse('"' + g[1] + '"').trim();
+      if (t) return t;
+    } catch { /* fall through */ }
+  }
+  // 2) The visible ".Caption" block on the /embed/captioned/ page.
+  const idx = html.search(/class="Caption"/);
+  if (idx !== -1) {
+    let sub = html.slice(idx);
+    const end = sub.search(/class="CaptionComments"/);
+    if (end !== -1) sub = sub.slice(0, end);
+    sub = sub.replace(/<a[^>]*class="CaptionUsername"[\s\S]*?<\/a>/i, "");
+    const t = decodeEntities(sub).trim();
+    if (t) return t;
+  }
+  // 3) og:description meta as a last resort (often the caption in quotes).
+  const og = html.match(
+    /<meta[^>]+property="og:description"[^>]+content="([^"]*)"/i
+  );
+  if (og?.[1]) {
+    const decoded = decodeEntities(og[1]).trim();
+    const q = decoded.match(/[""](.+)[""]\s*$/s);
+    return (q ? q[1] : decoded).trim();
+  }
+  return "";
+}
+
+/** Fetch a public Instagram post's caption via its captioned embed page. */
+async function fetchInstagramCaption(shortcode: string): Promise<string> {
+  const url = `https://www.instagram.com/p/${encodeURIComponent(
+    shortcode
+  )}/embed/captioned/`;
+  const res = await fetch(url, {
+    headers: {
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0 Safari/537.36",
+      "Accept-Language": "en-US,en;q=0.9",
+    },
+  });
+  if (!res.ok) throw new Error(`embed fetch returned ${res.status}`);
+  const html = await res.text();
+  const caption = captionFromEmbedHtml(html);
+  if (!caption) throw new Error("caption not found (post may be private)");
+  return caption;
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -170,6 +247,26 @@ Deno.serve(async (req: Request) => {
   }
   text = text.trim();
   if (!text) return json({ error: "No text provided" }, 400);
+
+  // If the input is an Instagram link, fetch the caption and parse that instead.
+  let source: "text" | "instagram" = "text";
+  const shortcode = instagramShortcode(text);
+  if (shortcode) {
+    try {
+      text = await fetchInstagramCaption(shortcode);
+      source = "instagram";
+    } catch (e) {
+      return json(
+        {
+          error:
+            "Couldn't fetch the Instagram caption automatically. Open the post, copy its caption, and paste the text here instead.",
+          detail: String(e),
+        },
+        422
+      );
+    }
+  }
+
   if (text.length > 12000) text = text.slice(0, 12000);
 
   const apiKey = Deno.env.get("OPENAI_API_KEY");
@@ -230,6 +327,7 @@ Deno.serve(async (req: Request) => {
   ) ?? "";
 
   return json({
+    source,
     recipe: {
       title: asStr(parsed.title),
       description: asStr(parsed.description),

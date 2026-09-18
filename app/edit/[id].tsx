@@ -61,6 +61,7 @@ export default function EditRecipeScreen() {
   const [saving, setSaving] = useState(false);
   const [pasteText, setPasteText] = useState("");
   const [parsing, setParsing] = useState(false);
+  const isPasteLink = /instagram\.com\//i.test(pasteText);
 
   const patch = (p: Partial<RecipeDraft>) => setDraft((d) => ({ ...d, ...p }));
 
@@ -174,14 +175,14 @@ export default function EditRecipeScreen() {
           <View style={styles.pasteCard}>
             <Text style={styles.pasteTitle}>✨ Paste a recipe to auto-fill</Text>
             <Text style={styles.pasteHint}>
-              Paste a full recipe or an Instagram caption, then tap Parse.
-              Review the fields below before saving.
+              Paste a full recipe, an Instagram caption, or an Instagram link,
+              then tap the button. Review the fields below before saving.
             </Text>
             <TextInput
               style={[styles.input, styles.pasteInput]}
               value={pasteText}
               onChangeText={setPasteText}
-              placeholder="Paste recipe text or a caption here…"
+              placeholder="Paste recipe text, a caption, or an Instagram link…"
               placeholderTextColor={colors.textMuted}
               multiline
             />
@@ -194,7 +195,13 @@ export default function EditRecipeScreen() {
               disabled={parsing || !pasteText.trim()}
             >
               <Text style={styles.parseBtnText}>
-                {parsing ? "Parsing…" : "Parse & fill"}
+                {parsing
+                  ? isPasteLink
+                    ? "Fetching…"
+                    : "Parsing…"
+                  : isPasteLink
+                  ? "Fetch & fill"
+                  : "Parse & fill"}
               </Text>
             </Pressable>
           </View>

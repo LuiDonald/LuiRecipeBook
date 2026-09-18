@@ -27,7 +27,21 @@ export default function CategoryScreen() {
   return (
     <View style={styles.container}>
       <Stack.Screen
-        options={{ title: `${iconForCategory(category)}  ${category}` }}
+        options={{
+          title: `${iconForCategory(category)}  ${category}`,
+          // Explicit back control so it also shows on web (not just native).
+          headerLeft: () => (
+            <Pressable
+              onPress={() =>
+                router.canGoBack() ? router.back() : router.replace("/")
+              }
+              hitSlop={12}
+              style={styles.backBtn}
+            >
+              <Text style={styles.backText}>‹ Back</Text>
+            </Pressable>
+          ),
+        }}
       />
 
       <FlatList
@@ -69,6 +83,8 @@ export default function CategoryScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.bg },
+  backBtn: { paddingHorizontal: spacing.sm },
+  backText: { color: colors.primary, fontSize: 16, fontWeight: "600" },
   empty: { textAlign: "center", color: colors.textMuted, marginTop: spacing.xl },
   fab: {
     position: "absolute",
