@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import {
-  Alert,
   Image,
   KeyboardAvoidingView,
   Platform,
@@ -19,6 +18,7 @@ import { pickImageFromLibrary, takePhoto } from "../../src/lib/imagePicker";
 import { isSupabaseConfigured } from "../../src/lib/supabase";
 import { useAuth } from "../../src/lib/auth";
 import { parseRecipeText } from "../../src/lib/parseRecipe";
+import { alertDialog } from "../../src/lib/dialogs";
 import { isLocalPhoto } from "../../src/lib/storage";
 import { colors, maxContentWidth, radius, spacing } from "../../src/lib/theme";
 
@@ -73,7 +73,7 @@ export default function EditRecipeScreen() {
       const gotSomething =
         p.title || p.ingredients.length || p.steps.length;
       if (!gotSomething) {
-        Alert.alert(
+        alertDialog(
           "No recipe found",
           "That text didn't look like a recipe. Try pasting the full recipe or caption."
         );
@@ -90,7 +90,7 @@ export default function EditRecipeScreen() {
       }));
       if (p.tags.length) setTagsText(p.tags.join(", "));
     } catch (e: any) {
-      Alert.alert("Couldn't parse", e?.message ?? "Unknown error");
+      alertDialog("Couldn't parse", e?.message ?? "Unknown error");
     } finally {
       setParsing(false);
     }
@@ -123,7 +123,7 @@ export default function EditRecipeScreen() {
 
   const onSave = async () => {
     if (!draft.title.trim()) {
-      Alert.alert("Title required", "Please give your recipe a title.");
+      alertDialog("Title required", "Please give your recipe a title.");
       return;
     }
     setSaving(true);
@@ -146,7 +146,7 @@ export default function EditRecipeScreen() {
         router.back();
       }
     } catch (e: any) {
-      Alert.alert("Could not save", e?.message ?? "Unknown error");
+      alertDialog("Could not save", e?.message ?? "Unknown error");
     } finally {
       setSaving(false);
     }

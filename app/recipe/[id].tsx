@@ -1,6 +1,5 @@
 import {
   ActivityIndicator,
-  Alert,
   Image,
   Pressable,
   ScrollView,
@@ -11,6 +10,7 @@ import {
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useRecipe, recipeStore } from "../../src/data/recipeStore";
 import { useAuth } from "../../src/lib/auth";
+import { confirmDialog, alertDialog } from "../../src/lib/dialogs";
 import { colors, maxContentWidth, radius, spacing } from "../../src/lib/theme";
 
 export default function RecipeDetailScreen() {
@@ -31,18 +31,19 @@ export default function RecipeDetailScreen() {
     );
   }
 
-  const confirmDelete = () => {
-    Alert.alert("Delete recipe", `Delete “${recipe.title}”?`, [
-      { text: "Cancel", style: "cancel" },
-      {
-        text: "Delete",
-        style: "destructive",
-        onPress: async () => {
-          await recipeStore.remove(recipe.id);
-          router.back();
-        },
-      },
-    ]);
+  const confirmDelete = async () => {
+    const ok = await confirmDialog(
+      "Delete recipe",
+      `Delete “${recipe.title}”? This can’t be undone.`,
+      { confirmText: "Delete", destructive: true }
+    );
+    if (!ok) return;
+    try {
+      await recipeStore.remove(recipe.id);
+      router.canGoBack() ? router.back() : router.replace("/");
+    } catch (e: any) {
+      alertDialog("Couldn’t delete", e?.message ?? "Unknown error");
+    }
   };
 
   return (

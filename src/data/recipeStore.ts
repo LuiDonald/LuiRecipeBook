@@ -163,8 +163,19 @@ class RecipeStore {
   async remove(id: string): Promise<void> {
     const photo = this.getById(id)?.photoUrl ?? null;
     if (isSupabaseConfigured && supabase) {
-      const { error } = await supabase.from("recipes").delete().eq("id", id);
+      // `.select()` lets us see how many rows were actually deleted. If RLS
+      // blocks the delete it returns 0 rows with no error, so we surface that.
+      const { data, error } = await supabase
+        .from("recipes")
+        .delete()
+        .eq("id", id)
+        .select("id");
       if (error) throw new Error(error.message);
+      if (!data || data.length === 0) {
+        throw new Error(
+          "Delete was blocked — make sure you're logged in as the owner."
+        );
+      }
       void deleteRecipePhoto(photo);
     }
     this.recipes = this.recipes.filter((r) => r.id !== id);
