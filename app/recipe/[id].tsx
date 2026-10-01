@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   ActivityIndicator,
   Image,
@@ -5,19 +6,38 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from "react-native";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useRecipe, recipeStore } from "../../src/data/recipeStore";
+import { useRecipeNotes, addNote } from "../../src/data/recipeNotes";
 import { useAuth } from "../../src/lib/auth";
 import { confirmDialog, alertDialog } from "../../src/lib/dialogs";
 import { colors, maxContentWidth, radius, spacing } from "../../src/lib/theme";
+
+/** Format an ISO timestamp as a short, readable date + time. */
+function formatNoteDate(iso: string): string {
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return "";
+  return d.toLocaleDateString(undefined, {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
 
 export default function RecipeDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { recipe, loading } = useRecipe(id);
-  const { isEditor } = useAuth();
+  const { isEditor, email } = useAuth();
+  const { notes, loading: notesLoading, refresh: refreshNotes } =
+    useRecipeNotes(id);
+  const [noteText, setNoteText] = useState("");
+  const [savingNote, setSavingNote] = useState(false);
 
   if (!recipe) {
     return (
@@ -43,6 +63,21 @@ export default function RecipeDetailScreen() {
       router.canGoBack() ? router.back() : router.replace("/");
     } catch (e: any) {
       alertDialog("Couldn’t delete", e?.message ?? "Unknown error");
+    }
+  };
+
+  const onAddNote = async () => {
+    const text = noteText.trim();
+    if (!text || savingNote) return;
+    setSavingNote(true);
+    try {
+      await addNote(recipe.id, text, email ?? "owner");
+      setNoteText("");
+      await refreshNotes();
+    } catch (e: any) {
+      alertDialog("Couldn’t add note", e?.message ?? "Unknown error");
+    } finally {
+      setSavingNote(false);
     }
   };
 
@@ -135,6 +170,53 @@ export default function RecipeDetailScreen() {
         )}
       </View>
 
+      <View style={styles.section}>
+        <Text style={styles.heading}>Cooking notes</Text>
+
+        {isEditor && (
+          <View style={styles.noteComposer}>
+            <TextInput
+              style={styles.noteInput}
+              placeholder="Add a note (e.g. “used 1.5 tbsp soy sauce, less salty”)"
+              placeholderTextColor={colors.textMuted}
+              value={noteText}
+              onChangeText={setNoteText}
+              multiline
+              editable={!savingNote}
+            />
+            <Pressable
+              style={[
+                styles.addNoteBtn,
+                (!noteText.trim() || savingNote) && styles.addNoteBtnDisabled,
+              ]}
+              onPress={onAddNote}
+              disabled={!noteText.trim() || savingNote}
+            >
+              {savingNote ? (
+                <ActivityIndicator color="#fff" size="small" />
+              ) : (
+                <Text style={styles.addNoteText}>Add note</Text>
+              )}
+            </Pressable>
+          </View>
+        )}
+
+        {notesLoading && notes.length === 0 ? (
+          <ActivityIndicator color={colors.primary} />
+        ) : notes.length === 0 ? (
+          <Text style={styles.muted}>No notes yet.</Text>
+        ) : (
+          notes.map((note) => (
+            <View key={note.id} style={styles.noteCard}>
+              <Text style={styles.noteText}>{note.text}</Text>
+              <Text style={styles.noteMeta}>
+                {note.author} · {formatNoteDate(note.createdAt)}
+              </Text>
+            </View>
+          ))
+        )}
+      </View>
+
       {isEditor && (
         <Pressable style={styles.deleteBtn} onPress={confirmDelete}>
           <Text style={styles.deleteText}>Delete recipe</Text>
@@ -202,6 +284,39 @@ const styles = StyleSheet.create({
   },
   listText: { flex: 1, fontSize: 15, color: colors.text, lineHeight: 22 },
   muted: { color: colors.textMuted },
+  noteComposer: { gap: spacing.sm, marginBottom: spacing.sm },
+  noteInput: {
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radius.md,
+    backgroundColor: colors.card,
+    padding: spacing.md,
+    fontSize: 15,
+    color: colors.text,
+    minHeight: 72,
+    textAlignVertical: "top",
+  },
+  addNoteBtn: {
+    alignSelf: "flex-start",
+    backgroundColor: colors.primary,
+    borderRadius: radius.md,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
+    minWidth: 96,
+    alignItems: "center",
+  },
+  addNoteBtnDisabled: { opacity: 0.5 },
+  addNoteText: { color: "#fff", fontWeight: "700", fontSize: 14 },
+  noteCard: {
+    backgroundColor: colors.card,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: spacing.md,
+    gap: spacing.xs,
+  },
+  noteText: { fontSize: 15, color: colors.text, lineHeight: 22 },
+  noteMeta: { fontSize: 12, color: colors.textMuted },
   deleteBtn: {
     marginTop: spacing.xl,
     marginHorizontal: spacing.lg,
