@@ -42,7 +42,6 @@ src/
   lib/               # supabase client, auth, storage, theme, helpers
   types/             # Recipe model
 supabase/schema.sql  # Tables, indexes, RLS policies, storage bucket
-scripts/             # One-time Google Drive import + OCR transcription tooling
 ```
 
 ## Getting started
@@ -107,22 +106,6 @@ inbox on the same device, and the edit controls appear.
 npx expo export --platform web     # builds ./dist
 npx eas-cli deploy --prod          # deploys to EAS Hosting
 ```
-
-## Data import (one-time)
-
-The `scripts/` folder holds the tooling used to migrate existing recipes out of
-a public Google Drive share into Supabase:
-
-- `import_drive.mjs` — downloads Drive images/docs, converts HEIC → JPEG,
-  uploads photos, and inserts recipe rows (category = Drive folder name).
-- `fetch_images.mjs` / `fetch_doc_images.mjs` — pull handwritten-recipe images
-  (including images embedded in "empty" Google Docs) for transcription.
-- `apply_parsed.mjs` — applies transcribed `scripts/parsed/*.json`
-  (structured ingredients + steps) onto the matching recipes.
-
-These are one-off utilities and must run **outside** a sandbox (they need
-network, filesystem, and the `sips` image tool). They are not part of the app
-runtime.
 
 ## License
 
