@@ -35,10 +35,11 @@ export default function TabsLayout() {
           paddingBottom: bottomPad + 8,
           paddingTop: 8,
         },
-        // Center icon+label as a group; the extra paddingBottom lifts the
-        // labels clear of the bar's bottom edge so descenders aren't clipped.
+        // React Navigation sizes the label box to its line-height and clips
+        // with overflow:hidden, so a tight line-height chops descenders
+        // (p, g). Give it a taller line box so the full glyphs show.
         tabBarItemStyle: { paddingVertical: 2 },
-        tabBarLabelStyle: { fontSize: 11, lineHeight: 14, marginTop: 2 },
+        tabBarLabelStyle: { fontSize: 11, lineHeight: 18, marginTop: 2 },
       }}
     >
       <Tabs.Screen
