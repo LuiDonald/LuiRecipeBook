@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import {
   FlatList,
   Image,
+  Modal,
   Pressable,
   StyleSheet,
   Text,
@@ -11,9 +12,11 @@ import {
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRecipes, recipeStore } from "../../src/data/recipeStore";
-import { CATEGORIES, iconForCategory } from "../../src/data/categories";
+import { useFolders, folderStore } from "../../src/data/folders";
+import { iconForCategory } from "../../src/data/categories";
 import { isSupabaseConfigured } from "../../src/lib/supabase";
 import { useAuth } from "../../src/lib/auth";
+import { confirmDialog, alertDialog } from "../../src/lib/dialogs";
 import { colors, maxContentWidth, radius, spacing } from "../../src/lib/theme";
 import { Recipe } from "../../src/types/recipe";
 
@@ -21,19 +24,66 @@ export default function HomeScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { recipes } = useRecipes();
+  const { folders: activeFolders, managedNames } = useFolders();
   const { isEditor } = useAuth();
   const [query, setQuery] = useState("");
+  const [editing, setEditing] = useState(false);
+  const [showCreate, setShowCreate] = useState(false);
+  const [newName, setNewName] = useState("");
+  const [newIcon, setNewIcon] = useState("");
+  const [creating, setCreating] = useState(false);
 
   const counts = useMemo(() => recipeStore.countsByCategory(), [recipes]);
 
-  // Show every canonical category, plus any custom categories present in data.
+  // Active managed folders, plus any categories present in recipe data that
+  // aren't managed yet (brand-new / unforeseen folders). Soft-deleted folders
+  // stay hidden because their name is still in `managedNames`.
   const folders = useMemo(() => {
-    const known = new Set(CATEGORIES.map((c) => c.name));
+    const managed = activeFolders.map((f) => ({ name: f.name, icon: f.icon }));
     const extras = Object.keys(counts)
-      .filter((name) => name && !known.has(name))
+      .filter((name) => name && !managedNames.has(name))
+      .sort((a, b) => a.localeCompare(b))
       .map((name) => ({ name, icon: iconForCategory(name) }));
-    return [...CATEGORIES, ...extras];
-  }, [counts]);
+    return [...managed, ...extras];
+  }, [activeFolders, managedNames, counts]);
+
+  const onCreateFolder = async () => {
+    const name = newName.trim();
+    if (!name) return;
+    if (folders.some((f) => f.name.toLowerCase() === name.toLowerCase())) {
+      alertDialog("Folder exists", `There's already a “${name}” folder.`);
+      return;
+    }
+    setCreating(true);
+    try {
+      await folderStore.create(name, newIcon);
+      setShowCreate(false);
+      setNewName("");
+      setNewIcon("");
+    } catch (e: any) {
+      alertDialog("Couldn't create folder", e?.message ?? "Unknown error");
+    } finally {
+      setCreating(false);
+    }
+  };
+
+  const onDeleteFolder = async (name: string, count: number) => {
+    const warn =
+      count > 0
+        ? `\n\n${count} recipe${count === 1 ? "" : "s"} in this folder will be hidden from the folder list. Nothing is permanently deleted — the folder can be recovered.`
+        : "";
+    const ok = await confirmDialog(
+      `Delete “${name}” folder?`,
+      `This soft-deletes the folder.${warn}`,
+      { confirmText: "Delete", destructive: true }
+    );
+    if (!ok) return;
+    try {
+      await folderStore.remove(name);
+    } catch (e: any) {
+      alertDialog("Couldn't delete folder", e?.message ?? "Unknown error");
+    }
+  };
 
   const searchResults = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -91,18 +141,96 @@ export default function HomeScreen() {
           keyExtractor={(item) => item.name}
           style={styles.centeredList}
           contentContainerStyle={styles.list}
+          ListHeaderComponent={
+            isEditor ? (
+              <View style={styles.folderTools}>
+                <Pressable
+                  style={styles.toolBtn}
+                  onPress={() => setShowCreate(true)}
+                >
+                  <Text style={styles.toolBtnText}>＋ New folder</Text>
+                </Pressable>
+                <Pressable
+                  style={styles.toolBtn}
+                  onPress={() => setEditing((e) => !e)}
+                >
+                  <Text style={styles.toolBtnText}>
+                    {editing ? "Done" : "Edit"}
+                  </Text>
+                </Pressable>
+              </View>
+            ) : null
+          }
           renderItem={({ item }) => (
             <FolderRow
               icon={item.icon}
               name={item.name}
               count={counts[item.name] ?? 0}
+              editing={editing && isEditor}
               onPress={() =>
                 router.push(`/category/${encodeURIComponent(item.name)}`)
               }
+              onDelete={() => onDeleteFolder(item.name, counts[item.name] ?? 0)}
             />
           )}
         />
       )}
+
+      <Modal
+        visible={showCreate}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowCreate(false)}
+      >
+        <Pressable
+          style={styles.modalBackdrop}
+          onPress={() => setShowCreate(false)}
+        >
+          <Pressable style={styles.modalCard} onPress={() => {}}>
+            <Text style={styles.modalTitle}>New folder</Text>
+            <Text style={styles.modalLabel}>Name</Text>
+            <TextInput
+              style={styles.modalInput}
+              value={newName}
+              onChangeText={setNewName}
+              placeholder="e.g. Breakfast"
+              placeholderTextColor={colors.textMuted}
+              autoFocus
+              returnKeyType="done"
+              onSubmitEditing={onCreateFolder}
+            />
+            <Text style={styles.modalLabel}>Icon (emoji, optional)</Text>
+            <TextInput
+              style={styles.modalInput}
+              value={newIcon}
+              onChangeText={setNewIcon}
+              placeholder="📁"
+              placeholderTextColor={colors.textMuted}
+              maxLength={4}
+            />
+            <View style={styles.modalActions}>
+              <Pressable
+                style={styles.modalCancel}
+                onPress={() => setShowCreate(false)}
+              >
+                <Text style={styles.modalCancelText}>Cancel</Text>
+              </Pressable>
+              <Pressable
+                style={[
+                  styles.modalCreate,
+                  (creating || !newName.trim()) && { opacity: 0.6 },
+                ]}
+                onPress={onCreateFolder}
+                disabled={creating || !newName.trim()}
+              >
+                <Text style={styles.modalCreateText}>
+                  {creating ? "Creating…" : "Create"}
+                </Text>
+              </Pressable>
+            </View>
+          </Pressable>
+        </Pressable>
+      </Modal>
 
       {isEditor && (
         <Pressable
@@ -120,12 +248,16 @@ function FolderRow({
   icon,
   name,
   count,
+  editing,
   onPress,
+  onDelete,
 }: {
   icon: string;
   name: string;
   count: number;
+  editing: boolean;
   onPress: () => void;
+  onDelete: () => void;
 }) {
   return (
     <Pressable
@@ -141,7 +273,13 @@ function FolderRow({
           {count} {count === 1 ? "recipe" : "recipes"}
         </Text>
       </View>
-      <Text style={styles.chevron}>›</Text>
+      {editing ? (
+        <Pressable style={styles.deleteBtn} onPress={onDelete} hitSlop={8}>
+          <Text style={styles.deleteBtnText}>Delete</Text>
+        </Pressable>
+      ) : (
+        <Text style={styles.chevron}>›</Text>
+      )}
     </Pressable>
   );
 }
@@ -239,6 +377,78 @@ const styles = StyleSheet.create({
   rowTitle: { fontSize: 16, fontWeight: "600", color: colors.text },
   rowSubtitle: { fontSize: 13, color: colors.textMuted },
   chevron: { fontSize: 22, color: colors.textMuted },
+  folderTools: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    gap: spacing.sm,
+    marginBottom: spacing.sm,
+  },
+  toolBtn: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.primary,
+  },
+  toolBtnText: { color: colors.primary, fontWeight: "700", fontSize: 13 },
+  deleteBtn: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.md,
+    backgroundColor: colors.danger,
+  },
+  deleteBtnText: { color: "#fff", fontWeight: "700", fontSize: 13 },
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.4)",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: spacing.lg,
+  },
+  modalCard: {
+    width: "100%",
+    maxWidth: 360,
+    backgroundColor: colors.card,
+    borderRadius: radius.md,
+    padding: spacing.lg,
+    gap: spacing.sm,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: colors.text,
+    marginBottom: spacing.xs,
+  },
+  modalLabel: { fontSize: 13, fontWeight: "700", color: colors.text },
+  modalInput: {
+    backgroundColor: colors.bg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radius.md,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
+    fontSize: 15,
+    color: colors.text,
+  },
+  modalActions: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    gap: spacing.sm,
+    marginTop: spacing.sm,
+  },
+  modalCancel: {
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.md,
+  },
+  modalCancelText: { color: colors.textMuted, fontWeight: "600", fontSize: 15 },
+  modalCreate: {
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.md,
+    backgroundColor: colors.primary,
+  },
+  modalCreateText: { color: "#fff", fontWeight: "700", fontSize: 15 },
   empty: { textAlign: "center", color: colors.textMuted, marginTop: spacing.xl },
   fab: {
     position: "absolute",

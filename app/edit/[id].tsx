@@ -13,7 +13,7 @@ import {
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { recipeStore } from "../../src/data/recipeStore";
 import { emptyDraft, RecipeDraft } from "../../src/types/recipe";
-import { CATEGORIES } from "../../src/data/categories";
+import { useFolders } from "../../src/data/folders";
 import { pickImageFromLibrary, takePhoto } from "../../src/lib/imagePicker";
 import { isSupabaseConfigured } from "../../src/lib/supabase";
 import { useAuth } from "../../src/lib/auth";
@@ -30,6 +30,7 @@ export default function EditRecipeScreen() {
   const router = useRouter();
   const isNew = id === "new";
   const { isEditor, ready } = useAuth();
+  const { folders } = useFolders();
 
   // Guard: only the owner can reach the editor. Bounce everyone else once the
   // auth state has resolved (so we don't redirect the owner mid-load).
@@ -64,6 +65,17 @@ export default function EditRecipeScreen() {
   const isPasteLink = /instagram\.com\//i.test(pasteText);
 
   const patch = (p: Partial<RecipeDraft>) => setDraft((d) => ({ ...d, ...p }));
+
+  // Live folders as category options, plus the recipe's current category if it
+  // isn't an active folder (e.g. a legacy/soft-deleted one), so it stays shown.
+  const categoryChips = useMemo(() => {
+    const chips = folders.map((f) => ({ name: f.name, icon: f.icon }));
+    const current = draft.category.trim();
+    if (current && !chips.some((c) => c.name === current)) {
+      chips.push({ name: current, icon: "📁" });
+    }
+    return chips;
+  }, [folders, draft.category]);
 
   const onParse = async () => {
     if (!pasteText.trim()) return;
@@ -239,7 +251,7 @@ export default function EditRecipeScreen() {
 
         <Field label="Category">
           <View style={styles.chipWrap}>
-            {CATEGORIES.map((c) => {
+            {categoryChips.map((c) => {
               const selected = draft.category === c.name;
               return (
                 <Pressable

@@ -4,7 +4,7 @@ import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { RecipeCard } from "../../src/components/RecipeCard";
 import { useRecipes, recipeStore } from "../../src/data/recipeStore";
-import { iconForCategory } from "../../src/data/categories";
+import { useFolders, folderStore } from "../../src/data/folders";
 import { useAuth } from "../../src/lib/auth";
 import { useGrid } from "../../src/lib/useGrid";
 import { colors, spacing } from "../../src/lib/theme";
@@ -17,8 +17,9 @@ export default function CategoryScreen() {
   const { isEditor } = useAuth();
   const { columns, cardWidth, containerWidth, gap, padding } = useGrid();
 
-  // Re-render when recipes change.
+  // Re-render when recipes/folders change.
   useRecipes();
+  useFolders();
   const recipes = useMemo(
     () => recipeStore.getByCategory(category),
     [category, recipeStore.getAll().length]
@@ -28,7 +29,7 @@ export default function CategoryScreen() {
     <View style={styles.container}>
       <Stack.Screen
         options={{
-          title: `${iconForCategory(category)}  ${category}`,
+          title: `${folderStore.iconFor(category)}  ${category}`,
           // Explicit back control so it also shows on web (not just native).
           headerLeft: () => (
             <Pressable
