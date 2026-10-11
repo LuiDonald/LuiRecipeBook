@@ -31,11 +31,12 @@ export default function TabsLayout() {
         tabBarStyle: {
           backgroundColor: colors.card,
           borderTopColor: colors.border,
-          height: 52 + bottomPad,
+          height: 60 + bottomPad,
           paddingBottom: bottomPad,
-          paddingTop: 6,
+          paddingTop: 8,
         },
-        tabBarLabelStyle: { fontSize: 11 },
+        // lineHeight + marginBottom keep descenders (p, g) from being clipped.
+        tabBarLabelStyle: { fontSize: 11, lineHeight: 15, marginBottom: 4 },
       }}
     >
       <Tabs.Screen
