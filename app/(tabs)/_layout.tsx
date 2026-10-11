@@ -7,7 +7,7 @@ import { colors } from "../../src/lib/theme";
 
 /** Simple emoji tab icon (no icon library needed). */
 function TabIcon({ emoji, focused }: { emoji: string; focused: boolean }) {
-  return <Text style={{ fontSize: 20, opacity: focused ? 1 : 0.6 }}>{emoji}</Text>;
+  return <Text style={{ fontSize: 24, opacity: focused ? 1 : 0.55 }}>{emoji}</Text>;
 }
 
 export default function TabsLayout() {
@@ -28,18 +28,16 @@ export default function TabsLayout() {
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.textMuted,
         // Reserve room for the iPhone home indicator so labels aren't clipped.
+        // Icon-only tab bar — avoids RN's clipped fixed-height label box and
+        // reads cleanly above the iPhone home indicator.
+        tabBarShowLabel: false,
         tabBarStyle: {
           backgroundColor: colors.card,
           borderTopColor: colors.border,
-          height: 56 + bottomPad,
-          paddingBottom: bottomPad + 8,
+          height: 48 + bottomPad,
+          paddingBottom: bottomPad,
           paddingTop: 8,
         },
-        // React Navigation sizes the label box to its line-height and clips
-        // with overflow:hidden, so a tight line-height chops descenders
-        // (p, g). Give it a taller line box so the full glyphs show.
-        tabBarItemStyle: { paddingVertical: 2 },
-        tabBarLabelStyle: { fontSize: 11, lineHeight: 18, marginTop: 2 },
       }}
     >
       <Tabs.Screen
