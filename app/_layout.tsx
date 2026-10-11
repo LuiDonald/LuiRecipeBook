@@ -20,6 +20,8 @@ export default function RootLayout() {
           <Stack.Screen name="index" options={{ title: "My Recipes" }} />
           <Stack.Screen name="category/[name]" options={{ title: "Category" }} />
           <Stack.Screen name="recipe/[id]" options={{ title: "Recipe" }} />
+          <Stack.Screen name="shopping" options={{ title: "Shopping list" }} />
+          <Stack.Screen name="review" options={{ title: "Review queue" }} />
           <Stack.Screen
             name="edit/[id]"
             options={{ title: "Edit Recipe", presentation: "modal" }}

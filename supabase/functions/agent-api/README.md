@@ -31,14 +31,14 @@ Base: `https://<project>.supabase.co/functions/v1/agent-api`
 
 | Method | Path | Purpose |
 |---|---|---|
-| GET | `/recipes?q=&category=&tags=&limit=&offset=` | list / search (paginated); add `includeDeleted=true` or `onlyDeleted=true` to see soft-deleted |
+| GET | `/recipes?q=&category=&tags=&limit=&offset=` | list / search (paginated); add `includeDeleted`/`onlyDeleted` or `includePending`/`onlyPending=true` to see hidden recipes |
 | GET | `/recipes/:id` | full detail incl. notes / refinement history + `deletedAt`/`deleteReason` |
 | PATCH | `/recipes/:id` | update fields (title, description, category, photoUrl, ingredients, steps, tags) |
 | DELETE | `/recipes/:id` | soft delete (hidden everywhere, recoverable); optional `{ "reason": "duplicate" }` or `?reason=` |
 | POST | `/recipes/:id/restore` | undo a soft delete |
 | POST | `/recipes/:id/notes` | append a timestamped cooking note |
 | DELETE | `/recipes/:id/notes/:noteId` | permanently remove a note |
-| POST | `/recipes` | create a recipe from structured JSON |
+| POST | `/recipes` | create a recipe (saved as **pending** — hidden until the owner approves it in the app) |
 
 ### Notes on the data model
 - `ingredients`, `steps`, `tags` are arrays of plain strings (the DB stores them
@@ -48,6 +48,10 @@ Base: `https://<project>.supabase.co/functions/v1/agent-api`
   `delete_reason`). Deleted recipes are hidden from the app and from list/search
   by default; recover with `POST /recipes/:id/restore`. Requires the
   `recipe_soft_delete.sql` migration.
+- **Agent-created recipes need review**: `POST /recipes` saves with `status:"pending"`
+  (hidden from the app and from default list/search). The owner approves in the app
+  to publish, or rejects to permanently remove. Requires the `recipe_review.sql`
+  migration.
 - **Note deletes are hard**: `DELETE /recipes/:id/notes/:noteId` removes the row.
 - Notes are **append-only** via PATCH: use `POST /recipes/:id/notes`; PATCH rejects
   a `notes` field.

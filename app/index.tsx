@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { Stack, useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useRecipes, recipeStore } from "../src/data/recipeStore";
+import { useRecipes, usePendingRecipes, recipeStore } from "../src/data/recipeStore";
 import { CATEGORIES, iconForCategory } from "../src/data/categories";
 import { isSupabaseConfigured } from "../src/lib/supabase";
 import { useAuth } from "../src/lib/auth";
@@ -21,6 +21,7 @@ export default function HomeScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { recipes } = useRecipes();
+  const { pending } = usePendingRecipes();
   const { isEditor, isSignedIn } = useAuth();
   const [query, setQuery] = useState("");
 
@@ -53,11 +54,21 @@ export default function HomeScreen() {
       <Stack.Screen
         options={{
           headerRight: () => (
-            <Pressable onPress={() => router.push("/login")} hitSlop={12}>
-              <Text style={styles.headerAction}>
-                {isSignedIn ? "Account" : "Log in"}
-              </Text>
-            </Pressable>
+            <View style={styles.headerRow}>
+              <Pressable onPress={() => router.push("/shopping")} hitSlop={12}>
+                <Text style={styles.headerAction}>Shopping</Text>
+              </Pressable>
+              {isEditor && pending.length > 0 && (
+                <Pressable onPress={() => router.push("/review")} hitSlop={12}>
+                  <Text style={styles.headerAction}>Review ({pending.length})</Text>
+                </Pressable>
+              )}
+              <Pressable onPress={() => router.push("/login")} hitSlop={12}>
+                <Text style={styles.headerAction}>
+                  {isSignedIn ? "Account" : "Log in"}
+                </Text>
+              </Pressable>
+            </View>
           ),
         }}
       />
@@ -189,7 +200,8 @@ function RecipeRow({
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.bg },
-  headerAction: { color: colors.primary, fontSize: 16, fontWeight: "600" },
+  headerRow: { flexDirection: "row", alignItems: "center", gap: spacing.md },
+  headerAction: { color: colors.primary, fontSize: 15, fontWeight: "600" },
   banner: {
     backgroundColor: colors.primarySoft,
     paddingHorizontal: spacing.lg,
