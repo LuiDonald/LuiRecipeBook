@@ -70,6 +70,7 @@ class RecipeStore {
     const { data, error } = await supabase
       .from("recipes")
       .select("*")
+      .is("deleted_at", null) // hide soft-deleted recipes
       .order("updated_at", { ascending: false });
 
     if (error) {
@@ -160,15 +161,23 @@ class RecipeStore {
     return updated;
   }
 
-  async remove(id: string): Promise<void> {
-    const photo = this.getById(id)?.photoUrl ?? null;
+  /**
+   * Soft-delete a recipe: mark it `deleted_at` instead of removing the row, so
+   * it can be recovered (e.g. via the agent API's restore endpoint). The photo
+   * is intentionally kept so a restore stays intact.
+   */
+  async remove(id: string, reason?: string): Promise<void> {
     if (isSupabaseConfigured && supabase) {
-      // `.select()` lets us see how many rows were actually deleted. If RLS
-      // blocks the delete it returns 0 rows with no error, so we surface that.
+      // `.select()` lets us see how many rows were actually updated. If RLS
+      // blocks the write it returns 0 rows with no error, so we surface that.
       const { data, error } = await supabase
         .from("recipes")
-        .delete()
+        .update({
+          deleted_at: new Date().toISOString(),
+          delete_reason: reason?.trim() || null,
+        })
         .eq("id", id)
+        .is("deleted_at", null)
         .select("id");
       if (error) throw new Error(error.message);
       if (!data || data.length === 0) {
@@ -176,7 +185,6 @@ class RecipeStore {
           "Delete was blocked — make sure you're logged in as the owner."
         );
       }
-      void deleteRecipePhoto(photo);
     }
     this.recipes = this.recipes.filter((r) => r.id !== id);
     this.emit();

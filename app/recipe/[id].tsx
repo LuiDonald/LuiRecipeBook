@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useRecipe, recipeStore } from "../../src/data/recipeStore";
-import { useRecipeNotes, addNote } from "../../src/data/recipeNotes";
+import { useRecipeNotes, addNote, deleteNote } from "../../src/data/recipeNotes";
 import { useAuth } from "../../src/lib/auth";
 import { confirmDialog, alertDialog } from "../../src/lib/dialogs";
 import { colors, maxContentWidth, radius, spacing } from "../../src/lib/theme";
@@ -54,7 +54,7 @@ export default function RecipeDetailScreen() {
   const confirmDelete = async () => {
     const ok = await confirmDialog(
       "Delete recipe",
-      `Delete “${recipe.title}”? This can’t be undone.`,
+      `Delete “${recipe.title}”? It will be hidden from the app but can be recovered.`,
       { confirmText: "Delete", destructive: true }
     );
     if (!ok) return;
@@ -78,6 +78,20 @@ export default function RecipeDetailScreen() {
       alertDialog("Couldn’t add note", e?.message ?? "Unknown error");
     } finally {
       setSavingNote(false);
+    }
+  };
+
+  const onDeleteNote = async (noteId: string) => {
+    const ok = await confirmDialog("Remove note", "Remove this note?", {
+      confirmText: "Remove",
+      destructive: true,
+    });
+    if (!ok) return;
+    try {
+      await deleteNote(noteId);
+      await refreshNotes();
+    } catch (e: any) {
+      alertDialog("Couldn’t remove note", e?.message ?? "Unknown error");
     }
   };
 
@@ -209,9 +223,19 @@ export default function RecipeDetailScreen() {
           notes.map((note) => (
             <View key={note.id} style={styles.noteCard}>
               <Text style={styles.noteText}>{note.text}</Text>
-              <Text style={styles.noteMeta}>
-                {note.author} · {formatNoteDate(note.createdAt)}
-              </Text>
+              <View style={styles.noteFooter}>
+                <Text style={styles.noteMeta}>
+                  {note.author} · {formatNoteDate(note.createdAt)}
+                </Text>
+                {isEditor && (
+                  <Pressable
+                    onPress={() => onDeleteNote(note.id)}
+                    hitSlop={8}
+                  >
+                    <Text style={styles.noteRemove}>Remove</Text>
+                  </Pressable>
+                )}
+              </View>
             </View>
           ))
         )}
@@ -316,7 +340,14 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   noteText: { fontSize: 15, color: colors.text, lineHeight: 22 },
+  noteFooter: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: spacing.sm,
+  },
   noteMeta: { fontSize: 12, color: colors.textMuted },
+  noteRemove: { fontSize: 12, fontWeight: "700", color: colors.danger },
   deleteBtn: {
     marginTop: spacing.xl,
     marginHorizontal: spacing.lg,

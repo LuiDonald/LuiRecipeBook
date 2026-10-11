@@ -65,6 +65,24 @@ export async function addNote(
   return fromRow(data);
 }
 
+/** Permanently delete a note. Requires the owner to be signed in (RLS). */
+export async function deleteNote(noteId: string): Promise<void> {
+  if (!isSupabaseConfigured || !supabase) {
+    throw new Error("Supabase is not configured");
+  }
+  const { data, error } = await supabase
+    .from("recipe_notes")
+    .delete()
+    .eq("id", noteId)
+    .select("id");
+  if (error) throw new Error(error.message);
+  if (!data || data.length === 0) {
+    throw new Error(
+      "Remove was blocked — make sure you're logged in as the owner."
+    );
+  }
+}
+
 /** Hook: load a recipe's notes and expose a refresh. */
 export function useRecipeNotes(recipeId: string | undefined): {
   notes: RecipeNote[];

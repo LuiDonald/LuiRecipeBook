@@ -36,7 +36,7 @@ const cors = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
     "authorization, content-type, apikey, x-client-info",
-  "Access-Control-Allow-Methods": "GET, POST, PATCH, OPTIONS",
+  "Access-Control-Allow-Methods": "GET, POST, PATCH, DELETE, OPTIONS",
 };
 
 function json(body: unknown, status = 200): Response {
@@ -57,6 +57,7 @@ function recipeSummary(r: Record<string, any>) {
     photoUrl: r.photo_url ?? null,
     tags: r.tags ?? [],
     description: d.length > 200 ? d.slice(0, 199) + "…" : d,
+    deletedAt: r.deleted_at ?? null,
   };
 }
 
@@ -76,6 +77,8 @@ function recipeDetail(r: Record<string, any>, notes: Record<string, any>[]) {
     refinementHistory: publicNotes, // notes ARE the refinement history
     createdAt: r.created_at,
     updatedAt: r.updated_at,
+    deletedAt: r.deleted_at ?? null,
+    deleteReason: r.delete_reason ?? null,
   };
 }
 
@@ -140,11 +143,17 @@ async function listRecipes(url: URL): Promise<Response> {
     100
   );
   const offset = Math.max(parseInt(url.searchParams.get("offset") ?? "0", 10) || 0, 0);
+  const includeDeleted = url.searchParams.get("includeDeleted") === "true";
+  const onlyDeleted = url.searchParams.get("onlyDeleted") === "true";
 
   let query = db
     .from("recipes")
     .select("*", { count: "exact" })
     .order("updated_at", { ascending: false });
+
+  // Hide soft-deleted recipes unless the caller explicitly asks for them.
+  if (onlyDeleted) query = query.not("deleted_at", "is", null);
+  else if (!includeDeleted) query = query.is("deleted_at", null);
 
   if (q) {
     // Strip characters that would break the PostgREST or() filter grammar.
@@ -274,6 +283,81 @@ async function createRecipe(req: Request): Promise<Response> {
   return json(recipeDetail(data, []), 201);
 }
 
+async function softDeleteRecipe(id: string, req: Request): Promise<Response> {
+  if (!UUID_RE.test(id)) throw new BadRequest("Invalid recipe id");
+
+  // Reason may come from a JSON body or a ?reason= query param (both optional).
+  let reason: string | undefined;
+  const ct = req.headers.get("content-type") ?? "";
+  if (ct.includes("application/json")) {
+    try {
+      const body = await req.json();
+      if (body && typeof body === "object") reason = optString(body.reason, "reason");
+    } catch {
+      // ignore empty/invalid body — reason is optional
+    }
+  }
+  if (reason === undefined) {
+    reason = new URL(req.url).searchParams.get("reason") ?? undefined;
+  }
+
+  const { data, error } = await db
+    .from("recipes")
+    .update({
+      deleted_at: new Date().toISOString(),
+      delete_reason: reason?.trim() || null,
+    })
+    .eq("id", id)
+    .is("deleted_at", null) // don't clobber an existing delete timestamp
+    .select("*")
+    .maybeSingle();
+  if (error) throw error;
+  if (!data) {
+    // Either the recipe doesn't exist, or it's already deleted.
+    const { data: existing } = await db
+      .from("recipes")
+      .select("id, deleted_at")
+      .eq("id", id)
+      .maybeSingle();
+    if (!existing) return json({ error: "Recipe not found" }, 404);
+    return json({ id, deleted: true, alreadyDeleted: true });
+  }
+  return json({
+    id: data.id,
+    deleted: true,
+    deletedAt: data.deleted_at,
+    deleteReason: data.delete_reason,
+  });
+}
+
+async function restoreRecipe(id: string): Promise<Response> {
+  if (!UUID_RE.test(id)) throw new BadRequest("Invalid recipe id");
+  const { data, error } = await db
+    .from("recipes")
+    .update({ deleted_at: null, delete_reason: null })
+    .eq("id", id)
+    .select("*")
+    .maybeSingle();
+  if (error) throw error;
+  if (!data) return json({ error: "Recipe not found" }, 404);
+  const notes = await fetchNotes(id);
+  return json(recipeDetail(data, notes));
+}
+
+async function deleteNote(recipeId: string, noteId: string): Promise<Response> {
+  if (!UUID_RE.test(recipeId)) throw new BadRequest("Invalid recipe id");
+  if (!UUID_RE.test(noteId)) throw new BadRequest("Invalid note id");
+  const { data, error } = await db
+    .from("recipe_notes")
+    .delete()
+    .eq("id", noteId)
+    .eq("recipe_id", recipeId)
+    .select("id");
+  if (error) throw error;
+  if (!data || data.length === 0) return json({ error: "Note not found" }, 404);
+  return json({ id: noteId, deleted: true });
+}
+
 // ---- router ----
 
 Deno.serve(async (req: Request) => {
@@ -316,13 +400,29 @@ Deno.serve(async (req: Request) => {
       const id = seg[1];
       if (req.method === "GET") return await getRecipe(id);
       if (req.method === "PATCH") return await patchRecipe(id, req);
+      if (req.method === "DELETE") return await softDeleteRecipe(id, req);
       return json({ error: "Method not allowed" }, 405);
     }
 
-    // /recipes/:id/notes
-    if (seg.length === 3 && seg[2] === "notes") {
+    // /recipes/:id/notes  and  /recipes/:id/restore
+    if (seg.length === 3) {
       const id = seg[1];
-      if (req.method === "POST") return await addNote(id, req);
+      if (seg[2] === "notes") {
+        if (req.method === "POST") return await addNote(id, req);
+        return json({ error: "Method not allowed" }, 405);
+      }
+      if (seg[2] === "restore") {
+        if (req.method === "POST") return await restoreRecipe(id);
+        return json({ error: "Method not allowed" }, 405);
+      }
+      return json({ error: "Not found" }, 404);
+    }
+
+    // /recipes/:id/notes/:noteId
+    if (seg.length === 4 && seg[2] === "notes") {
+      const id = seg[1];
+      const noteId = seg[3];
+      if (req.method === "DELETE") return await deleteNote(id, noteId);
       return json({ error: "Method not allowed" }, 405);
     }
 
