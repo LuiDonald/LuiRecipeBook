@@ -8,21 +8,20 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { Stack, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useRecipes, usePendingRecipes, recipeStore } from "../src/data/recipeStore";
-import { CATEGORIES, iconForCategory } from "../src/data/categories";
-import { isSupabaseConfigured } from "../src/lib/supabase";
-import { useAuth } from "../src/lib/auth";
-import { colors, maxContentWidth, radius, spacing } from "../src/lib/theme";
-import { Recipe } from "../src/types/recipe";
+import { useRecipes, recipeStore } from "../../src/data/recipeStore";
+import { CATEGORIES, iconForCategory } from "../../src/data/categories";
+import { isSupabaseConfigured } from "../../src/lib/supabase";
+import { useAuth } from "../../src/lib/auth";
+import { colors, maxContentWidth, radius, spacing } from "../../src/lib/theme";
+import { Recipe } from "../../src/types/recipe";
 
 export default function HomeScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { recipes } = useRecipes();
-  const { pending } = usePendingRecipes();
-  const { isEditor, isSignedIn } = useAuth();
+  const { isEditor } = useAuth();
   const [query, setQuery] = useState("");
 
   const counts = useMemo(() => recipeStore.countsByCategory(), [recipes]);
@@ -51,27 +50,6 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
-      <Stack.Screen
-        options={{
-          headerRight: () => (
-            <View style={styles.headerRow}>
-              <Pressable onPress={() => router.push("/shopping")} hitSlop={12}>
-                <Text style={styles.headerAction}>Shopping</Text>
-              </Pressable>
-              {isEditor && pending.length > 0 && (
-                <Pressable onPress={() => router.push("/review")} hitSlop={12}>
-                  <Text style={styles.headerAction}>Review ({pending.length})</Text>
-                </Pressable>
-              )}
-              <Pressable onPress={() => router.push("/login")} hitSlop={12}>
-                <Text style={styles.headerAction}>
-                  {isSignedIn ? "Account" : "Log in"}
-                </Text>
-              </Pressable>
-            </View>
-          ),
-        }}
-      />
       {!isSupabaseConfigured && (
         <View style={styles.banner}>
           <Text style={styles.bannerText}>
@@ -200,8 +178,6 @@ function RecipeRow({
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.bg },
-  headerRow: { flexDirection: "row", alignItems: "center", gap: spacing.md },
-  headerAction: { color: colors.primary, fontSize: 15, fontWeight: "600" },
   banner: {
     backgroundColor: colors.primarySoft,
     paddingHorizontal: spacing.lg,

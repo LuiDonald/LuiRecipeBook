@@ -17,18 +17,12 @@ export default function RootLayout() {
             contentStyle: { backgroundColor: colors.bg },
           }}
         >
-          <Stack.Screen name="index" options={{ title: "My Recipes" }} />
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="category/[name]" options={{ title: "Category" }} />
           <Stack.Screen name="recipe/[id]" options={{ title: "Recipe" }} />
-          <Stack.Screen name="shopping" options={{ title: "Shopping list" }} />
-          <Stack.Screen name="review" options={{ title: "Review queue" }} />
           <Stack.Screen
             name="edit/[id]"
             options={{ title: "Edit Recipe", presentation: "modal" }}
-          />
-          <Stack.Screen
-            name="login"
-            options={{ title: "Log in", presentation: "modal" }}
           />
         </Stack>
       </SafeAreaProvider>

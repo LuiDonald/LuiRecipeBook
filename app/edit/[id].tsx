@@ -35,7 +35,7 @@ export default function EditRecipeScreen() {
   // auth state has resolved (so we don't redirect the owner mid-load).
   useEffect(() => {
     if (ready && !isEditor) {
-      router.replace("/login");
+      router.replace("/account");
     }
   }, [ready, isEditor, router]);
 

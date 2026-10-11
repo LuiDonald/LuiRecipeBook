@@ -9,17 +9,15 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { Stack, useRouter } from "expo-router";
 import {
   useAuth,
   sendMagicLink,
   signOut,
   ownerEmail,
-} from "../src/lib/auth";
-import { colors, maxContentWidth, radius, spacing } from "../src/lib/theme";
+} from "../../src/lib/auth";
+import { colors, maxContentWidth, radius, spacing } from "../../src/lib/theme";
 
-export default function LoginScreen() {
-  const router = useRouter();
+export default function AccountScreen() {
   const { isSignedIn, isEditor, email } = useAuth();
   const [value, setValue] = useState(ownerEmail || "");
   const [sending, setSending] = useState(false);
@@ -49,7 +47,6 @@ export default function LoginScreen() {
       style={styles.container}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
-      <Stack.Screen options={{ title: isSignedIn ? "Account" : "Log in" }} />
       <View style={styles.body}>
         {isSignedIn ? (
           <>
@@ -64,7 +61,6 @@ export default function LoginScreen() {
               style={[styles.primaryBtn, { marginTop: spacing.xl }]}
               onPress={async () => {
                 await signOut();
-                router.back();
               }}
             >
               <Text style={styles.primaryBtnText}>Log out</Text>

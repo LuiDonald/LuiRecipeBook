@@ -7,17 +7,16 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { Stack } from "expo-router";
-import { useRecipes, recipeStore } from "../src/data/recipeStore";
+import { useRecipes, recipeStore } from "../../src/data/recipeStore";
 import {
   useShoppingList,
   shoppingList,
   itemKey,
   ingredientKey,
-} from "../src/data/shoppingList";
-import { Recipe } from "../src/types/recipe";
-import { confirmDialog } from "../src/lib/dialogs";
-import { colors, maxContentWidth, radius, spacing } from "../src/lib/theme";
+} from "../../src/data/shoppingList";
+import { Recipe } from "../../src/types/recipe";
+import { confirmDialog } from "../../src/lib/dialogs";
+import { colors, maxContentWidth, radius, spacing } from "../../src/lib/theme";
 
 function capitalize(s: string): string {
   return s.length ? s.charAt(0).toUpperCase() + s.slice(1) : s;
@@ -89,27 +88,19 @@ export default function ShoppingScreen() {
 
   return (
     <View style={styles.container}>
-      <Stack.Screen
-        options={{
-          title: picking ? "Add recipes" : "Shopping list",
-          headerRight: () => (
-            <Pressable onPress={() => setPicking((p) => !p)} hitSlop={12}>
-              <Text style={styles.headerAction}>{picking ? "Done" : "Add"}</Text>
-            </Pressable>
-          ),
-        }}
-      />
-
       {picking ? (
         <>
-          <View style={styles.searchWrap}>
+          <View style={styles.topBar}>
             <TextInput
-              style={styles.search}
+              style={[styles.search, { flex: 1 }]}
               placeholder="Search recipes to add…"
               placeholderTextColor={colors.textMuted}
               value={query}
               onChangeText={setQuery}
             />
+            <Pressable style={styles.doneBtn} onPress={() => setPicking(false)}>
+              <Text style={styles.doneText}>Done</Text>
+            </Pressable>
           </View>
           <ScrollView
             style={styles.centeredList}
@@ -158,6 +149,9 @@ export default function ShoppingScreen() {
         </View>
       ) : (
         <ScrollView style={styles.centeredList} contentContainerStyle={styles.list}>
+          <Pressable style={styles.addMoreBtn} onPress={() => setPicking(true)}>
+            <Text style={styles.addMoreText}>＋ Add recipes</Text>
+          </Pressable>
           <View style={styles.summaryRow}>
             <Text style={styles.summary}>
               {view === "combined"
@@ -272,7 +266,32 @@ export default function ShoppingScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.bg },
-  headerAction: { color: colors.primary, fontSize: 16, fontWeight: "600" },
+  topBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.sm,
+    padding: spacing.lg,
+    paddingBottom: spacing.sm,
+    width: "100%",
+    maxWidth: maxContentWidth,
+    alignSelf: "center",
+  },
+  doneBtn: {
+    backgroundColor: colors.primary,
+    borderRadius: radius.md,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+  },
+  doneText: { color: "#fff", fontWeight: "700", fontSize: 15 },
+  addMoreBtn: {
+    borderWidth: 1.5,
+    borderColor: colors.primary,
+    borderRadius: radius.md,
+    paddingVertical: spacing.sm,
+    alignItems: "center",
+    marginBottom: spacing.md,
+  },
+  addMoreText: { color: colors.primary, fontWeight: "700", fontSize: 14 },
   centered: {
     flex: 1,
     alignItems: "center",

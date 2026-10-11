@@ -8,13 +8,13 @@ import {
   Text,
   View,
 } from "react-native";
-import { Stack, useRouter } from "expo-router";
-import { usePendingRecipes, recipeStore } from "../src/data/recipeStore";
-import { isSupabaseConfigured } from "../src/lib/supabase";
-import { useAuth } from "../src/lib/auth";
-import { confirmDialog, alertDialog } from "../src/lib/dialogs";
-import { colors, maxContentWidth, radius, spacing } from "../src/lib/theme";
-import { Recipe } from "../src/types/recipe";
+import { useRouter } from "expo-router";
+import { usePendingRecipes, recipeStore } from "../../src/data/recipeStore";
+import { isSupabaseConfigured } from "../../src/lib/supabase";
+import { useAuth } from "../../src/lib/auth";
+import { confirmDialog, alertDialog } from "../../src/lib/dialogs";
+import { colors, maxContentWidth, radius, spacing } from "../../src/lib/theme";
+import { Recipe } from "../../src/types/recipe";
 
 export default function ReviewScreen() {
   const router = useRouter();
@@ -23,7 +23,7 @@ export default function ReviewScreen() {
 
   // Owner-only screen: bounce anyone else to login once auth has settled.
   useEffect(() => {
-    if (ready && !isEditor) router.replace("/login");
+    if (ready && !isEditor) router.replace("/account");
   }, [ready, isEditor, router]);
 
   const loading = isSupabaseConfigured && !recipeStore.isLoaded;
@@ -54,7 +54,6 @@ export default function ReviewScreen() {
 
   return (
     <View style={styles.container}>
-      <Stack.Screen options={{ title: "Review queue" }} />
       {loading && pending.length === 0 ? (
         <View style={styles.centered}>
           <ActivityIndicator color={colors.primary} />
