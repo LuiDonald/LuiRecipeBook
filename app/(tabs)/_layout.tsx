@@ -1,5 +1,6 @@
 import { Tabs } from "expo-router";
 import { Text } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAuth } from "../../src/lib/auth";
 import { usePendingRecipes } from "../../src/data/recipeStore";
 import { colors } from "../../src/lib/theme";
@@ -12,7 +13,10 @@ function TabIcon({ emoji, focused }: { emoji: string; focused: boolean }) {
 export default function TabsLayout() {
   const { isEditor, isSignedIn } = useAuth();
   const { pending } = usePendingRecipes();
+  const insets = useSafeAreaInsets();
   const showReview = isEditor && pending.length > 0;
+  // Guarantee breathing room even when the inset reports 0 (e.g. web).
+  const bottomPad = Math.max(insets.bottom, 10);
 
   return (
     <Tabs
@@ -22,10 +26,15 @@ export default function TabsLayout() {
         headerTitleStyle: { fontWeight: "700" },
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.textMuted,
+        // Reserve room for the iPhone home indicator so labels aren't clipped.
         tabBarStyle: {
           backgroundColor: colors.card,
           borderTopColor: colors.border,
+          height: 52 + bottomPad,
+          paddingBottom: bottomPad,
+          paddingTop: 6,
         },
+        tabBarLabelStyle: { fontSize: 11 },
       }}
     >
       <Tabs.Screen
