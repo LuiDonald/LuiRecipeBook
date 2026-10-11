@@ -12,6 +12,7 @@ import {
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useRecipe, recipeStore } from "../../src/data/recipeStore";
 import { useRecipeNotes, addNote, deleteNote } from "../../src/data/recipeNotes";
+import { useShoppingList, shoppingList } from "../../src/data/shoppingList";
 import { useAuth } from "../../src/lib/auth";
 import { confirmDialog, alertDialog } from "../../src/lib/dialogs";
 import { colors, maxContentWidth, radius, spacing } from "../../src/lib/theme";
@@ -38,6 +39,8 @@ export default function RecipeDetailScreen() {
     useRecipeNotes(id);
   const [noteText, setNoteText] = useState("");
   const [savingNote, setSavingNote] = useState(false);
+  useShoppingList(); // subscribe for re-renders
+  const inShoppingList = recipe ? shoppingList.has(recipe.id) : false;
 
   if (!recipe) {
     return (
@@ -154,6 +157,21 @@ export default function RecipeDetailScreen() {
             ))}
           </View>
         )}
+      </View>
+
+      <View style={styles.section}>
+        <Pressable
+          style={[styles.shopBtn, inShoppingList && styles.shopBtnActive]}
+          onPress={() => shoppingList.toggleRecipe(recipe.id)}
+        >
+          <Text
+            style={[styles.shopText, inShoppingList && styles.shopTextActive]}
+          >
+            {inShoppingList
+              ? "✓ In shopping list — tap to remove"
+              : "＋ Add to shopping list"}
+          </Text>
+        </Pressable>
       </View>
 
       <View style={styles.section}>
@@ -339,6 +357,16 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     gap: spacing.xs,
   },
+  shopBtn: {
+    borderWidth: 1.5,
+    borderColor: colors.primary,
+    borderRadius: radius.md,
+    paddingVertical: spacing.md,
+    alignItems: "center",
+  },
+  shopBtnActive: { backgroundColor: colors.primarySoft },
+  shopText: { color: colors.primary, fontWeight: "700", fontSize: 15 },
+  shopTextActive: { color: colors.primary },
   noteText: { fontSize: 15, color: colors.text, lineHeight: 22 },
   noteFooter: {
     flexDirection: "row",

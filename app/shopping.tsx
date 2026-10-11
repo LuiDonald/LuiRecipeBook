@@ -13,34 +13,61 @@ import {
   useShoppingList,
   shoppingList,
   itemKey,
+  ingredientKey,
 } from "../src/data/shoppingList";
+import { Recipe } from "../src/types/recipe";
 import { confirmDialog } from "../src/lib/dialogs";
 import { colors, maxContentWidth, radius, spacing } from "../src/lib/theme";
+
+function capitalize(s: string): string {
+  return s.length ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+}
 
 export default function ShoppingScreen() {
   const { recipes } = useRecipes();
   useShoppingList(); // subscribe for re-renders
   const [picking, setPicking] = useState(false);
+  const [view, setView] = useState<"combined" | "byRecipe">("combined");
   const [query, setQuery] = useState("");
 
   const selectedIds = shoppingList.getRecipeIds();
   const selectedRecipes = useMemo(
-    () => selectedIds.map((id) => recipeStore.getById(id)).filter(Boolean),
+    () =>
+      selectedIds
+        .map((id) => recipeStore.getById(id))
+        .filter((r): r is Recipe => !!r),
     [selectedIds, recipes]
   );
 
-  const { totalItems, checkedItems } = useMemo(() => {
-    let total = 0;
-    let checked = 0;
+  // Combine similar ingredients across the selected recipes into one line each.
+  const groups = useMemo(() => {
+    const map = new Map<
+      string,
+      { label: string; entries: { key: string; text: string }[] }
+    >();
     for (const r of selectedRecipes) {
-      if (!r) continue;
-      total += r.ingredients.length;
-      r.ingredients.forEach((_, i) => {
-        if (shoppingList.isChecked(itemKey(r.id, i))) checked += 1;
+      r.ingredients.forEach((text, i) => {
+        const gkey = ingredientKey(text);
+        if (!map.has(gkey)) map.set(gkey, { label: capitalize(gkey), entries: [] });
+        map.get(gkey)!.entries.push({ key: itemKey(r.id, i), text });
       });
     }
-    return { totalItems: total, checkedItems: checked };
+    return Array.from(map.entries())
+      .map(([key, v]) => ({ key, ...v }))
+      .sort((a, b) => a.label.localeCompare(b.label));
   }, [selectedRecipes, recipes]);
+
+  // Progress counts (recomputed each render; cheap, and reflects checked state).
+  const lineTotal = selectedRecipes.reduce((n, r) => n + r.ingredients.length, 0);
+  let lineChecked = 0;
+  for (const r of selectedRecipes) {
+    r.ingredients.forEach((_, i) => {
+      if (shoppingList.isChecked(itemKey(r.id, i))) lineChecked += 1;
+    });
+  }
+  const combinedChecked = groups.filter((g) =>
+    g.entries.every((e) => shoppingList.isChecked(e.key))
+  ).length;
 
   const pickerResults = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -133,8 +160,11 @@ export default function ShoppingScreen() {
         <ScrollView style={styles.centeredList} contentContainerStyle={styles.list}>
           <View style={styles.summaryRow}>
             <Text style={styles.summary}>
-              {checkedItems}/{totalItems} item{totalItems === 1 ? "" : "s"} checked
-              · {selectedRecipes.length} recipe
+              {view === "combined"
+                ? `${combinedChecked}/${groups.length}`
+                : `${lineChecked}/${lineTotal}`}{" "}
+              item{(view === "combined" ? groups.length : lineTotal) === 1 ? "" : "s"}{" "}
+              checked · {selectedRecipes.length} recipe
               {selectedRecipes.length === 1 ? "" : "s"}
             </Text>
             <Pressable onPress={onClearAll} hitSlop={8}>
@@ -142,17 +172,73 @@ export default function ShoppingScreen() {
             </Pressable>
           </View>
 
-          {selectedRecipes.map((r) =>
-            r ? (
-              <View key={r.id} style={styles.group}>
-                <View style={styles.groupHeader}>
-                  <Text style={styles.groupTitle} numberOfLines={1}>
-                    {r.title}
-                  </Text>
-                  <Pressable onPress={() => shoppingList.removeRecipe(r.id)} hitSlop={8}>
-                    <Text style={styles.removeRecipe}>Remove</Text>
+          <View style={styles.toggle}>
+            {(["combined", "byRecipe"] as const).map((v) => (
+              <Pressable
+                key={v}
+                style={[styles.toggleBtn, view === v && styles.toggleBtnOn]}
+                onPress={() => setView(v)}
+              >
+                <Text style={[styles.toggleText, view === v && styles.toggleTextOn]}>
+                  {v === "combined" ? "Combined" : "By recipe"}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+
+          <View style={styles.chips}>
+            {selectedRecipes.map((r) => (
+              <Pressable
+                key={r.id}
+                style={styles.chip}
+                onPress={() => shoppingList.removeRecipe(r.id)}
+              >
+                <Text style={styles.chipText} numberOfLines={1}>
+                  {r.title}
+                </Text>
+                <Text style={styles.chipX}>×</Text>
+              </Pressable>
+            ))}
+          </View>
+
+          {view === "combined" ? (
+            <View style={styles.group}>
+              {groups.map((g) => {
+                const keys = g.entries.map((e) => e.key);
+                const done = keys.every((k) => shoppingList.isChecked(k));
+                const showSub =
+                  g.entries.length > 1 ||
+                  g.entries[0].text.trim().toLowerCase() !== g.label.toLowerCase();
+                return (
+                  <Pressable
+                    key={g.key}
+                    style={styles.itemRow}
+                    onPress={() => shoppingList.setItems(keys, !done)}
+                  >
+                    <View style={[styles.checkbox, done && styles.checkboxOn]}>
+                      {done ? <Text style={styles.checkmark}>✓</Text> : null}
+                    </View>
+                    <View style={styles.itemBody}>
+                      <Text style={[styles.itemText, done && styles.itemDone]}>
+                        {g.label}
+                        {g.entries.length > 1 ? `  ×${g.entries.length}` : ""}
+                      </Text>
+                      {showSub ? (
+                        <Text style={styles.itemSub}>
+                          {g.entries.map((e) => e.text).join("   +   ")}
+                        </Text>
+                      ) : null}
+                    </View>
                   </Pressable>
-                </View>
+                );
+              })}
+            </View>
+          ) : (
+            selectedRecipes.map((r) => (
+              <View key={r.id} style={styles.group}>
+                <Text style={styles.groupTitle} numberOfLines={1}>
+                  {r.title}
+                </Text>
                 {r.ingredients.length === 0 ? (
                   <Text style={styles.noItems}>No ingredients listed.</Text>
                 ) : (
@@ -176,7 +262,7 @@ export default function ShoppingScreen() {
                   })
                 )}
               </View>
-            ) : null
+            ))
           )}
         </ScrollView>
       )}
@@ -246,6 +332,42 @@ const styles = StyleSheet.create({
   },
   summary: { color: colors.textMuted, fontSize: 13, flex: 1 },
   clearAll: { color: colors.danger, fontWeight: "700", fontSize: 13 },
+  toggle: {
+    flexDirection: "row",
+    backgroundColor: colors.primarySoft,
+    borderRadius: radius.md,
+    padding: 3,
+    marginBottom: spacing.md,
+  },
+  toggleBtn: {
+    flex: 1,
+    paddingVertical: spacing.sm,
+    alignItems: "center",
+    borderRadius: radius.sm,
+  },
+  toggleBtnOn: { backgroundColor: colors.card },
+  toggleText: { fontSize: 13, fontWeight: "700", color: colors.primary },
+  toggleTextOn: { color: colors.text },
+  chips: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: spacing.sm,
+    marginBottom: spacing.md,
+  },
+  chip: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.xs,
+    backgroundColor: colors.card,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radius.lg,
+    paddingVertical: 6,
+    paddingHorizontal: spacing.md,
+    maxWidth: 220,
+  },
+  chipText: { fontSize: 13, color: colors.text, flexShrink: 1 },
+  chipX: { fontSize: 16, color: colors.textMuted, fontWeight: "700" },
   group: {
     backgroundColor: colors.card,
     borderWidth: 1,
@@ -255,14 +377,12 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
     gap: spacing.xs,
   },
-  groupHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+  groupTitle: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: colors.text,
     marginBottom: spacing.xs,
   },
-  groupTitle: { fontSize: 16, fontWeight: "700", color: colors.text, flex: 1 },
-  removeRecipe: { color: colors.danger, fontWeight: "700", fontSize: 13 },
   noItems: { color: colors.textMuted, fontStyle: "italic" },
   itemRow: {
     flexDirection: "row",
@@ -270,7 +390,9 @@ const styles = StyleSheet.create({
     gap: spacing.md,
     paddingVertical: spacing.sm,
   },
+  itemBody: { flex: 1, gap: 2 },
   itemText: { flex: 1, fontSize: 15, color: colors.text, lineHeight: 22 },
+  itemSub: { fontSize: 12, color: colors.textMuted },
   itemDone: { color: colors.textMuted, textDecorationLine: "line-through" },
   checkbox: {
     width: 24,
