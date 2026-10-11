@@ -3,6 +3,7 @@ import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { DialogHost } from "../src/components/DialogHost";
 import { colors } from "../src/lib/theme";
 
 // On web, Expo's default HTML viewport lacks `viewport-fit=cover`, so iOS never
@@ -45,6 +46,7 @@ export default function RootLayout() {
             options={{ title: "Edit Recipe", presentation: "modal" }}
           />
         </Stack>
+        <DialogHost />
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );
