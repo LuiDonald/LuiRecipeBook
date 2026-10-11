@@ -9,7 +9,7 @@ export const MOCK_RECIPES: Recipe[] = [
     id: "1",
     title: "Classic Margherita Pizza",
     description: "Blistered thin crust with San Marzano tomatoes, fresh mozzarella, and basil.",
-    category: "Veggie",
+    category: "Vegetable",
     photoUrl:
       "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800&q=80",
     ingredients: [

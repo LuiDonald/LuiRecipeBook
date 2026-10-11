@@ -15,7 +15,7 @@ export const CATEGORIES: Category[] = [
   { name: "Lamb", icon: "🍖" },
   { name: "Seafood", icon: "🦐" },
   { name: "Egg", icon: "🥚" },
-  { name: "Veggie", icon: "🥦" },
+  { name: "Vegetable", icon: "🥦" },
   { name: "Soup", icon: "🍲" },
   { name: "Rice Bowl / Ramen / Noodle", icon: "🍜" },
   { name: "Dessert", icon: "🍰" },

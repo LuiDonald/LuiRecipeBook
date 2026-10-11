@@ -26,7 +26,7 @@ const CATEGORIES = [
   "Lamb",
   "Seafood",
   "Egg",
-  "Veggie",
+  "Vegetable",
   "Soup",
   "Rice Bowl / Ramen / Noodle",
   "Dessert",
