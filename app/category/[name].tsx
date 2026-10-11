@@ -20,8 +20,15 @@ export default function CategoryScreen() {
   // Re-render when recipes/folders change.
   useRecipes();
   useFolders();
+  // Sort alphabetically by title so recipes are easy to scan in a folder.
   const recipes = useMemo(
-    () => recipeStore.getByCategory(category),
+    () =>
+      recipeStore
+        .getByCategory(category)
+        .slice()
+        .sort((a, b) =>
+          a.title.localeCompare(b.title, undefined, { sensitivity: "base" })
+        ),
     [category, recipeStore.getAll().length]
   );
 
