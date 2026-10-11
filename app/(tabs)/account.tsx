@@ -84,8 +84,9 @@ export default function AccountScreen() {
           <>
             <Text style={styles.title}>Log in to edit</Text>
             <Text style={styles.muted}>
-              Enter your email and we'll send you a magic link — no password
-              needed. Everyone can browse recipes; only the owner can edit.
+              Browsing is open to everyone — no login needed. Sign-in is
+              restricted to the owner's account for editing; other emails
+              won't receive a link.
             </Text>
             <TextInput
               style={styles.input}

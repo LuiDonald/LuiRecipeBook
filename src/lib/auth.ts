@@ -92,7 +92,13 @@ export async function sendMagicLink(email: string): Promise<void> {
   }
   const { error } = await supabase.auth.signInWithOtp({
     email: email.trim(),
-    options: { emailRedirectTo: redirectTo() },
+    options: {
+      emailRedirectTo: redirectTo(),
+      // Never create a new account — only the pre-existing owner can sign in.
+      // Combined with Supabase's "disable signups" setting, this locks access
+      // to the owner only (everyone else browses read-only without logging in).
+      shouldCreateUser: false,
+    },
   });
   if (error) throw new Error(error.message);
 }
