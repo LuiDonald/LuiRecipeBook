@@ -42,9 +42,12 @@ export default function HomeScreen() {
     const managed = activeFolders.map((f) => ({ name: f.name, icon: f.icon }));
     const extras = Object.keys(counts)
       .filter((name) => name && !managedNames.has(name))
-      .sort((a, b) => a.localeCompare(b))
       .map((name) => ({ name, icon: iconForCategory(name) }));
-    return [...managed, ...extras];
+    // Alphabetical by folder name (case-insensitive) so folders are easy to
+    // scan — matches the alphabetical sort inside each folder.
+    return [...managed, ...extras].sort((a, b) =>
+      a.name.localeCompare(b.name, undefined, { sensitivity: "base" })
+    );
   }, [activeFolders, managedNames, counts]);
 
   const onCreateFolder = async () => {
