@@ -15,8 +15,9 @@ export default function TabsLayout() {
   const { pending } = usePendingRecipes();
   const insets = useSafeAreaInsets();
   const showReview = isEditor && pending.length > 0;
-  // Guarantee breathing room even when the inset reports 0 (e.g. web).
-  const bottomPad = Math.max(insets.bottom, 10);
+  // Use the real safe-area inset (iPhone home indicator) when available,
+  // with a sensible floor for browsers/devices that report 0.
+  const bottomPad = Math.max(insets.bottom, 12);
 
   return (
     <Tabs
