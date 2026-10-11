@@ -17,10 +17,7 @@
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false,
-      "permissions": [
-        "android.permission.RECORD_AUDIO"
-      ]
+      "predictiveBackGestureEnabled": false
     },
     "web": {
       "favicon": "./assets/favicon.png",
@@ -32,7 +29,8 @@
         "expo-image-picker",
         {
           "photosPermission": "Allow Recipe to access your photos so you can attach images to recipes.",
-          "cameraPermission": "Allow Recipe to use the camera so you can snap a photo of your food."
+          "cameraPermission": "Allow Recipe to use the camera so you can snap a photo of your food.",
+          "microphonePermission": false
         }
       ]
     ],
