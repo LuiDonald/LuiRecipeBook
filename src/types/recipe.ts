@@ -12,12 +12,6 @@ export interface Recipe {
   ingredients: string[];
   steps: string[];
   tags: string[];
-  /**
-   * "published" (visible everywhere) or "pending" (an agent submission awaiting
-   * the owner's review). Owner-created recipes are published immediately.
-   * Absent in demo/mock data (treated as published).
-   */
-  status?: "published" | "pending";
   /** ISO timestamp. */
   createdAt: string;
   updatedAt: string;

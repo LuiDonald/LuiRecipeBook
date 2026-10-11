@@ -34,14 +34,9 @@ class RecipeStore {
     this.listeners.forEach((l) => l());
   }
 
-  /** Published recipes only (what the app shows everywhere). */
+  /** All (non-deleted) recipes — what the app shows everywhere. */
   getAll(): Recipe[] {
-    return this.recipes.filter((r) => r.status !== "pending");
-  }
-
-  /** Agent submissions awaiting review. */
-  getPending(): Recipe[] {
-    return this.recipes.filter((r) => r.status === "pending");
+    return this.recipes;
   }
 
   getById(id: string): Recipe | undefined {
@@ -196,49 +191,6 @@ class RecipeStore {
     this.emit();
   }
 
-  /** Approve a pending (agent-submitted) recipe → publish it. */
-  async approve(id: string): Promise<void> {
-    if (isSupabaseConfigured && supabase) {
-      const { data, error } = await supabase
-        .from("recipes")
-        .update({ status: "published", updated_at: new Date().toISOString() })
-        .eq("id", id)
-        .eq("status", "pending")
-        .select("id");
-      if (error) throw new Error(error.message);
-      if (!data || data.length === 0) {
-        throw new Error(
-          "Approve was blocked — make sure you're logged in as the owner."
-        );
-      }
-    }
-    this.recipes = this.recipes.map((r) =>
-      r.id === id ? { ...r, status: "published" } : r
-    );
-    this.emit();
-  }
-
-  /** Reject a pending recipe → permanently remove it (hard delete). */
-  async rejectPending(id: string): Promise<void> {
-    const photo = this.getById(id)?.photoUrl ?? null;
-    if (isSupabaseConfigured && supabase) {
-      const { data, error } = await supabase
-        .from("recipes")
-        .delete()
-        .eq("id", id)
-        .eq("status", "pending")
-        .select("id");
-      if (error) throw new Error(error.message);
-      if (!data || data.length === 0) {
-        throw new Error(
-          "Reject was blocked — make sure you're logged in as the owner."
-        );
-      }
-      void deleteRecipePhoto(photo);
-    }
-    this.recipes = this.recipes.filter((r) => r.id !== id);
-    this.emit();
-  }
 }
 
 export const recipeStore = new RecipeStore();
@@ -254,7 +206,6 @@ interface RecipeRow {
   ingredients: string[] | null;
   steps: string[] | null;
   tags: string[] | null;
-  status: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -269,7 +220,6 @@ function fromRow(row: RecipeRow): Recipe {
     ingredients: row.ingredients ?? [],
     steps: row.steps ?? [],
     tags: row.tags ?? [],
-    status: row.status === "pending" ? "pending" : "published",
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -300,22 +250,6 @@ export function useRecipes(): { recipes: Recipe[]; reload: () => void } {
 
   return {
     recipes: recipeStore.getAll(),
-    reload: () => recipeStore.load(true),
-  };
-}
-
-/** Pending (agent-submitted) recipes awaiting the owner's review. */
-export function usePendingRecipes(): { pending: Recipe[]; reload: () => void } {
-  const [, setTick] = useState(0);
-
-  useEffect(() => {
-    const unsub = recipeStore.subscribe(() => setTick((t) => t + 1));
-    recipeStore.load();
-    return unsub;
-  }, []);
-
-  return {
-    pending: recipeStore.getPending(),
     reload: () => recipeStore.load(true),
   };
 }

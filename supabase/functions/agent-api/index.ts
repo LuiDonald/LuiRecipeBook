@@ -57,7 +57,6 @@ function recipeSummary(r: Record<string, any>) {
     photoUrl: r.photo_url ?? null,
     tags: r.tags ?? [],
     description: d.length > 200 ? d.slice(0, 199) + "…" : d,
-    status: r.status ?? "published",
     deletedAt: r.deleted_at ?? null,
   };
 }
@@ -78,7 +77,6 @@ function recipeDetail(r: Record<string, any>, notes: Record<string, any>[]) {
     refinementHistory: publicNotes, // notes ARE the refinement history
     createdAt: r.created_at,
     updatedAt: r.updated_at,
-    status: r.status ?? "published",
     deletedAt: r.deleted_at ?? null,
     deleteReason: r.delete_reason ?? null,
   };
@@ -147,8 +145,6 @@ async function listRecipes(url: URL): Promise<Response> {
   const offset = Math.max(parseInt(url.searchParams.get("offset") ?? "0", 10) || 0, 0);
   const includeDeleted = url.searchParams.get("includeDeleted") === "true";
   const onlyDeleted = url.searchParams.get("onlyDeleted") === "true";
-  const includePending = url.searchParams.get("includePending") === "true";
-  const onlyPending = url.searchParams.get("onlyPending") === "true";
 
   let query = db
     .from("recipes")
@@ -158,14 +154,6 @@ async function listRecipes(url: URL): Promise<Response> {
   // Hide soft-deleted recipes unless the caller explicitly asks for them.
   if (onlyDeleted) query = query.not("deleted_at", "is", null);
   else if (!includeDeleted) query = query.is("deleted_at", null);
-
-  // Hide pending (unreviewed) submissions from meal planning by default.
-  // When the caller is explicitly browsing deleted recipes, don't also constrain
-  // by status, so a pending-and-deleted recipe is still visible there.
-  if (onlyPending) query = query.eq("status", "pending");
-  else if (!includePending && !onlyDeleted && !includeDeleted) {
-    query = query.eq("status", "published");
-  }
 
   if (q) {
     // Strip characters that would break the PostgREST or() filter grammar.
@@ -288,21 +276,12 @@ async function createRecipe(req: Request): Promise<Response> {
     ingredients: optStringArray(body.ingredients, "ingredients") ?? [],
     steps: optStringArray(body.steps, "steps") ?? [],
     tags: optStringArray(body.tags, "tags") ?? [],
-    // Agent submissions are held for owner review; they stay hidden from the
-    // app and from the default list until approved.
-    status: "pending",
   };
 
   const { data, error } = await db.from("recipes").insert(row).select("*").single();
   if (error) throw error;
-  return json(
-    {
-      ...recipeDetail(data, []),
-      message:
-        "Submitted for review. It stays hidden until the owner approves it in the app.",
-    },
-    201
-  );
+  // Created recipes are published immediately (no review queue).
+  return json(recipeDetail(data, []), 201);
 }
 
 async function softDeleteRecipe(id: string, req: Request): Promise<Response> {
