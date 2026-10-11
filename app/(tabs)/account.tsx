@@ -9,17 +9,12 @@ import {
   TextInput,
   View,
 } from "react-native";
-import {
-  useAuth,
-  sendMagicLink,
-  signOut,
-  ownerEmail,
-} from "../../src/lib/auth";
+import { useAuth, sendMagicLink, signOut } from "../../src/lib/auth";
 import { colors, maxContentWidth, radius, spacing } from "../../src/lib/theme";
 
 export default function AccountScreen() {
   const { isSignedIn, isEditor, email } = useAuth();
-  const [value, setValue] = useState(ownerEmail || "");
+  const [value, setValue] = useState("");
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
