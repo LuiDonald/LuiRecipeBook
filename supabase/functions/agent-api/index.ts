@@ -160,8 +160,12 @@ async function listRecipes(url: URL): Promise<Response> {
   else if (!includeDeleted) query = query.is("deleted_at", null);
 
   // Hide pending (unreviewed) submissions from meal planning by default.
+  // When the caller is explicitly browsing deleted recipes, don't also constrain
+  // by status, so a pending-and-deleted recipe is still visible there.
   if (onlyPending) query = query.eq("status", "pending");
-  else if (!includePending) query = query.eq("status", "published");
+  else if (!includePending && !onlyDeleted && !includeDeleted) {
+    query = query.eq("status", "published");
+  }
 
   if (q) {
     // Strip characters that would break the PostgREST or() filter grammar.
