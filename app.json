@@ -7,7 +7,6 @@
     "icon": "./assets/icon.png",
     "scheme": "recipe",
     "userInterfaceStyle": "light",
-    "newArchEnabled": true,
     "ios": {
       "supportsTablet": true
     },
