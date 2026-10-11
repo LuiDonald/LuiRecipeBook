@@ -17,7 +17,7 @@ export default function TabsLayout() {
   const showReview = isEditor && pending.length > 0;
   // Use the real safe-area inset (iPhone home indicator) when available,
   // with a sensible floor for browsers/devices that report 0.
-  const bottomPad = Math.max(insets.bottom, 12);
+  const bottomPad = Math.max(insets.bottom, 16);
 
   return (
     <Tabs
@@ -31,12 +31,14 @@ export default function TabsLayout() {
         tabBarStyle: {
           backgroundColor: colors.card,
           borderTopColor: colors.border,
-          height: 60 + bottomPad,
-          paddingBottom: bottomPad,
+          height: 56 + bottomPad,
+          paddingBottom: bottomPad + 8,
           paddingTop: 8,
         },
-        // lineHeight + marginBottom keep descenders (p, g) from being clipped.
-        tabBarLabelStyle: { fontSize: 11, lineHeight: 15, marginBottom: 4 },
+        // Center icon+label as a group; the extra paddingBottom lifts the
+        // labels clear of the bar's bottom edge so descenders aren't clipped.
+        tabBarItemStyle: { paddingVertical: 2 },
+        tabBarLabelStyle: { fontSize: 11, lineHeight: 14, marginTop: 2 },
       }}
     >
       <Tabs.Screen
