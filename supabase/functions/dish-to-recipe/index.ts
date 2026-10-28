@@ -148,7 +148,8 @@ Deno.serve(async (req: Request) => {
     },
     ...imageUrls.map((url) => ({
       type: "image_url",
-      image_url: { url, detail: "auto" },
+      // "low" keeps token cost tiny; dish recognition doesn't need hi-res tiling.
+      image_url: { url, detail: "low" },
     })),
   ];
 
