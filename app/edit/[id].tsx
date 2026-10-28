@@ -14,10 +14,15 @@ import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { recipeStore } from "../../src/data/recipeStore";
 import { emptyDraft, RecipeDraft } from "../../src/types/recipe";
 import { useFolders } from "../../src/data/folders";
-import { pickImageFromLibrary, takePhoto } from "../../src/lib/imagePicker";
+import {
+  pickImageFromLibrary,
+  pickImagesFromLibrary,
+  takePhoto,
+} from "../../src/lib/imagePicker";
 import { isSupabaseConfigured } from "../../src/lib/supabase";
 import { useAuth } from "../../src/lib/auth";
 import { parseRecipeText } from "../../src/lib/parseRecipe";
+import { reverseEngineerRecipe } from "../../src/lib/dishToRecipe";
 import { alertDialog } from "../../src/lib/dialogs";
 import { isLocalPhoto } from "../../src/lib/storage";
 import { colors, maxContentWidth, radius, spacing } from "../../src/lib/theme";
@@ -63,6 +68,9 @@ export default function EditRecipeScreen() {
   const [pasteText, setPasteText] = useState("");
   const [parsing, setParsing] = useState(false);
   const isPasteLink = /instagram\.com\//i.test(pasteText);
+  const [dishImages, setDishImages] = useState<string[]>([]);
+  const [dishDesc, setDishDesc] = useState("");
+  const [analyzing, setAnalyzing] = useState(false);
 
   const patch = (p: Partial<RecipeDraft>) => setDraft((d) => ({ ...d, ...p }));
 
@@ -105,6 +113,50 @@ export default function EditRecipeScreen() {
       alertDialog("Couldn't parse", e?.message ?? "Unknown error");
     } finally {
       setParsing(false);
+    }
+  };
+
+  // --- reverse-engineer a recipe from dish photo(s) + a description ---
+  const onAddDishPhotos = async () => {
+    const uris = await pickImagesFromLibrary();
+    if (uris.length) setDishImages((prev) => [...prev, ...uris]);
+  };
+  const onTakeDishPhoto = async () => {
+    const uri = await takePhoto();
+    if (uri) setDishImages((prev) => [...prev, uri]);
+  };
+  const removeDishImage = (i: number) =>
+    setDishImages((prev) => prev.filter((_, idx) => idx !== i));
+
+  const onReverseEngineer = async () => {
+    if (!dishImages.length || analyzing) return;
+    setAnalyzing(true);
+    try {
+      const p = await reverseEngineerRecipe(dishImages, dishDesc);
+      const gotSomething = p.title || p.ingredients.length || p.steps.length;
+      if (!gotSomething) {
+        alertDialog(
+          "No dish detected",
+          "The photo didn't look like a dish. Try a clearer photo or add a description."
+        );
+        return;
+      }
+      setDraft((d) => ({
+        ...d,
+        title: p.title || d.title,
+        description: p.description || d.description,
+        category: p.category || d.category,
+        ingredients: p.ingredients.length ? p.ingredients : d.ingredients,
+        steps: p.steps.length ? p.steps : d.steps,
+        tags: p.tags.length ? p.tags : d.tags,
+        // Use the first dish photo as the recipe photo if none is set yet.
+        photoUrl: d.photoUrl || dishImages[0],
+      }));
+      if (p.tags.length) setTagsText(p.tags.join(", "));
+    } catch (e: any) {
+      alertDialog("Couldn't analyze", e?.message ?? "Unknown error");
+    } finally {
+      setAnalyzing(false);
     }
   };
 
@@ -216,6 +268,68 @@ export default function EditRecipeScreen() {
                   : isPasteLink
                   ? "Fetch & fill"
                   : "Parse & fill"}
+              </Text>
+            </Pressable>
+          </View>
+        )}
+
+        {/* Reverse-engineer from a dish photo */}
+        {isSupabaseConfigured && (
+          <View style={styles.pasteCard}>
+            <Text style={styles.pasteTitle}>
+              📸 Reverse-engineer from a photo
+            </Text>
+            <Text style={styles.pasteHint}>
+              Add one or more photos of the finished dish and (optionally)
+              describe what it is or what's in it. AI combines the images with
+              your notes to draft a recipe. Review the fields before saving.
+            </Text>
+
+            {dishImages.length > 0 && (
+              <View style={styles.dishThumbs}>
+                {dishImages.map((uri, i) => (
+                  <View key={`${uri}-${i}`} style={styles.dishThumbWrap}>
+                    <Image source={{ uri }} style={styles.dishThumb} />
+                    <Pressable
+                      style={styles.dishRemove}
+                      onPress={() => removeDishImage(i)}
+                      hitSlop={6}
+                    >
+                      <Text style={styles.dishRemoveText}>✕</Text>
+                    </Pressable>
+                  </View>
+                ))}
+              </View>
+            )}
+
+            <View style={styles.photoActions}>
+              <Pressable style={styles.secondaryBtn} onPress={onAddDishPhotos}>
+                <Text style={styles.secondaryBtnText}>Add photos</Text>
+              </Pressable>
+              <Pressable style={styles.secondaryBtn} onPress={onTakeDishPhoto}>
+                <Text style={styles.secondaryBtnText}>Take photo</Text>
+              </Pressable>
+            </View>
+
+            <TextInput
+              style={[styles.input, styles.pasteInput]}
+              value={dishDesc}
+              onChangeText={setDishDesc}
+              placeholder="e.g. Grilled salmon with asparagus and a soy-ginger glaze…"
+              placeholderTextColor={colors.textMuted}
+              multiline
+            />
+
+            <Pressable
+              style={[
+                styles.parseBtn,
+                (analyzing || dishImages.length === 0) && { opacity: 0.6 },
+              ]}
+              onPress={onReverseEngineer}
+              disabled={analyzing || dishImages.length === 0}
+            >
+              <Text style={styles.parseBtnText}>
+                {analyzing ? "Analyzing…" : "Reverse-engineer recipe"}
               </Text>
             </Pressable>
           </View>
@@ -421,6 +535,26 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   parseBtnText: { color: "#fff", fontWeight: "700", fontSize: 15 },
+  dishThumbs: { flexDirection: "row", flexWrap: "wrap", gap: spacing.sm },
+  dishThumbWrap: { position: "relative" },
+  dishThumb: {
+    width: 72,
+    height: 72,
+    borderRadius: radius.sm,
+    backgroundColor: colors.card,
+  },
+  dishRemove: {
+    position: "absolute",
+    top: -6,
+    right: -6,
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: colors.danger,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  dishRemoveText: { color: "#fff", fontSize: 12, fontWeight: "700" },
   photo: {
     width: "100%",
     height: 200,

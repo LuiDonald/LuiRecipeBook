@@ -23,6 +23,24 @@ export async function pickImageFromLibrary(): Promise<string | null> {
 }
 
 /**
+ * Pick one or more photos from the device library.
+ * Returns an array of local URIs (empty if cancelled).
+ */
+export async function pickImagesFromLibrary(): Promise<string[]> {
+  const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+  if (!permission.granted) return [];
+
+  const result = await ImagePicker.launchImageLibraryAsync({
+    mediaTypes: ["images"],
+    allowsMultipleSelection: true,
+    quality: 0.7,
+  });
+
+  if (result.canceled || !result.assets?.length) return [];
+  return result.assets.map((a) => a.uri);
+}
+
+/**
  * Open the camera to take a new photo. Returns a local URI, or null.
  * This is the entry point for the future "snap food -> AI recipe" feature.
  */
