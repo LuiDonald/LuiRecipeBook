@@ -178,6 +178,7 @@ Deno.serve(async (req: Request) => {
 
   if (!aiRes.ok) {
     const detail = await aiRes.text();
+    console.error(`OpenAI error ${aiRes.status} (model=${model}):`, detail);
     return json({ error: `OpenAI error ${aiRes.status}`, detail }, 502);
   }
 

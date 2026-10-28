@@ -67,6 +67,18 @@ export async function reverseEngineerRecipe(
       if (ctx && typeof ctx.json === "function") {
         const body = await ctx.json();
         if (body?.error) message = body.error;
+        // Surface the underlying provider reason (e.g. OpenAI quota/rate-limit)
+        // so failures are actionable instead of a bare status code.
+        if (body?.detail) {
+          let reason = String(body.detail);
+          try {
+            const d = JSON.parse(body.detail);
+            reason = d?.error?.message ?? d?.message ?? reason;
+          } catch {
+            // detail wasn't JSON — use it as-is
+          }
+          if (reason) message = `${message}: ${reason}`;
+        }
       }
     } catch {
       // ignore — fall back to the generic message
