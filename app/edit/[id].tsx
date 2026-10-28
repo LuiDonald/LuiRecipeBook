@@ -281,8 +281,9 @@ export default function EditRecipeScreen() {
             </Text>
             <Text style={styles.pasteHint}>
               Add one or more photos of the finished dish and (optionally)
-              describe what it is or what's in it. AI combines the images with
-              your notes to draft a recipe. Review the fields before saving.
+              describe what it is, what's in it, and how many it serves. AI
+              combines the images with your notes to draft a recipe. Review the
+              fields before saving.
             </Text>
 
             {dishImages.length > 0 && (
@@ -315,7 +316,7 @@ export default function EditRecipeScreen() {
               style={[styles.input, styles.pasteInput]}
               value={dishDesc}
               onChangeText={setDishDesc}
-              placeholder="e.g. Grilled salmon with asparagus and a soy-ginger glaze…"
+              placeholder="e.g. Grilled salmon with asparagus, soy-ginger glaze — fed 4…"
               placeholderTextColor={colors.textMuted}
               multiline
             />

@@ -62,10 +62,15 @@ Return ONLY a JSON object with EXACTLY these keys:
   "category": string
 }
 
+Servings:
+- Decide a serving count BEFORE writing ingredients. If the cook's notes state servings or how many people it fed (e.g. "fed 6", "for 2", "family of 4"), use that EXACT number. Otherwise estimate from the photo and portion size, and when unsure default to 4 servings.
+- Scale ALL ingredient quantities consistently to that serving count.
+- State the serving count plainly at the START of "description" (e.g. "Serves ~4.").
+
 Rules:
 - "title": a short, clean, specific dish name (e.g. "Pan-Seared Salmon with Lemon Butter").
-- "description": one or two sentences. Make clear it is an approximate, reverse-engineered recipe based on the photo.
-- "ingredients": one per item, with reasonable estimated quantities (e.g. "2 salmon fillets", "3 tbsp butter"). Infer sensible amounts for a typical serving.
+- "description": one or two sentences, beginning with the serving count (e.g. "Serves ~4."). Make clear it is an approximate, reverse-engineered recipe based on the photo.
+- "ingredients": one per item, with specific quantities scaled to the serving count above (e.g. "2 salmon fillets", "3 tbsp butter"). Do not mix amounts from different serving sizes.
 - "steps": discrete, ordered, cookable instructions. No leading numbers or bullets.
 - "tags": a few lowercase keywords (cuisine, method, meal type).
 - "category": the single best fit from this list, or "" if unclear: ${CATEGORIES.join(", ")}.
