@@ -274,6 +274,8 @@ Deno.serve(async (req: Request) => {
 
   // Model is swappable via the OPENAI_MODEL secret (no code redeploy needed).
   const model = Deno.env.get("OPENAI_MODEL") ?? "gpt-4o";
+  // Reasoning models (o-series / GPT-5 family) reject a custom `temperature`.
+  const isReasoningModel = /^(o\d|gpt-5)/i.test(model);
 
   // --- OpenAI ---
   let aiRes: Response;
@@ -286,7 +288,7 @@ Deno.serve(async (req: Request) => {
       },
       body: JSON.stringify({
         model,
-        temperature: 0.2,
+        ...(isReasoningModel ? {} : { temperature: 0.2 }),
         response_format: { type: "json_object" },
         messages: [
           { role: "system", content: SYSTEM_PROMPT },

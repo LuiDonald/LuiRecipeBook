@@ -130,7 +130,10 @@ Deno.serve(async (req: Request) => {
 
   const apiKey = Deno.env.get("OPENAI_API_KEY");
   if (!apiKey) return json({ error: "OPENAI_API_KEY not configured" }, 500);
-  const model = Deno.env.get("OPENAI_MODEL") ?? "gpt-4o";
+  // Dedicated model for this feature (falls back to the shared OPENAI_MODEL,
+  // then gpt-4o). Set DISH_MODEL to a vision-capable model, e.g. gpt-5.
+  const model =
+    Deno.env.get("DISH_MODEL") ?? Deno.env.get("OPENAI_MODEL") ?? "gpt-4o";
   // Reasoning models (o-series, GPT-5 family) reject a custom `temperature`
   // (only the default is allowed), so only send it for the 4.x chat models.
   const isReasoningModel = /^(o\d|gpt-5)/i.test(model);
