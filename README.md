@@ -17,6 +17,19 @@ recipes (passwordless magic-link login).
 - 🔐 **Owner-only editing** — public visitors can browse; a single owner email
   can edit, enforced by Supabase Row Level Security (not just hidden buttons).
 - 📷 **Photo uploads** to Supabase Storage (with HEIC → JPEG handling on import).
+- 📸 **AI dish → recipe** — snap photos of a finished dish (plus an optional
+  description) and an AI vision model reverse-engineers a full recipe: title,
+  ingredients, steps, tags, category, and an estimated serving count, with
+  ingredients scaled to the servings you want.
+- ✨ **AI paste → recipe** — paste messy text (notes, a blog post, an Instagram
+  caption) and get it back as a clean, structured recipe.
+- 🛒 **Shopping list** — pick recipes and get a combined, check-off-able
+  grocery list with similar ingredients grouped together (saved per device).
+- 🗒️ **Cooking notes** — an append-only history of tweaks and refinements on
+  each recipe.
+- 🤖 **Recipe agent API** — a token-protected HTTP API so an AI assistant can
+  search, refine, and add recipes (new ones land in a review queue for the
+  owner to approve).
 - 📱 **One codebase** for native and web via `expo-router`.
 
 ## Tech stack
@@ -24,25 +37,42 @@ recipes (passwordless magic-link login).
 | Layer     | Choice |
 |-----------|--------|
 | App       | Expo (React Native) + `expo-router`, TypeScript |
-| Backend   | Supabase (Postgres + Storage + Auth) |
+| Backend   | Supabase (Postgres + Storage + Auth + Edge Functions) |
+| AI        | OpenAI (called only from Edge Functions; the key never ships in the app) |
 | Auth      | Supabase magic-link (passwordless email) |
 | Hosting   | EAS Hosting (web) |
 
 ## Project structure
 
 ```
-app/                 # Screens (expo-router file-based routes)
-  index.tsx          #   Home: folder browser + search
-  category/[name]    #   Recipes within a category
-  recipe/[id]        #   Recipe detail
-  edit/[id]          #   Create / edit form (owner only)
-  login.tsx          #   Magic-link login
+app/                       # Screens (expo-router file-based routes)
+  (tabs)/index.tsx         #   My Recipes: folder browser + search
+  (tabs)/shopping.tsx      #   Shopping list
+  (tabs)/account.tsx       #   Magic-link login / account
+  category/[name]          #   Recipes within a category
+  recipe/[id]              #   Recipe detail + cooking notes
+  edit/[id]                #   Create / edit form, incl. AI import (owner only)
 src/
-  data/              # recipeStore (observable repo), categories, mock data
-  lib/               # supabase client, auth, storage, theme, helpers
-  types/             # Recipe model
-supabase/schema.sql  # Tables, indexes, RLS policies, storage bucket
+  data/                    # recipeStore, folders, notes, shopping list, mock data
+  lib/                     # supabase client, auth, AI clients, storage, theme
+  types/                   # Recipe model
+supabase/
+  schema.sql               # Tables, indexes, RLS policies, storage bucket
+  *.sql                    # Later migrations (folders, notes, review, soft delete)
+  functions/
+    dish-to-recipe/        #   AI: photos of a dish → recipe
+    parse-recipe/          #   AI: pasted text → recipe
+    recipe-agent/          #   Token-protected API for an AI assistant
 ```
+
+## Cloning this repo
+
+Cloning gives you the **code only — none of my recipes, photos, or keys.**
+All data lives in my Supabase project. To run your own copy, you'll need your
+own free [Supabase](https://supabase.com) project (and an
+[OpenAI API key](https://platform.openai.com/api-keys) if you want the AI
+features), then follow the steps below. Without Supabase values the app falls
+back to demo mode with a few sample recipes.
 
 ## Getting started
 
@@ -75,13 +105,45 @@ EXPO_PUBLIC_OWNER_EMAIL=you@example.com   # the only account allowed to edit
 In the Supabase dashboard, open **SQL Editor → New query**, paste the contents of
 [`supabase/schema.sql`](supabase/schema.sql), and run it. This creates the
 `recipes` table, the `recipe-photos` storage bucket, and the security rules
-(public read, owner-only writes — the owner email is baked into the policies).
+(public read, owner-only writes). Then run the other `.sql` files in
+`supabase/` the same way (`folders`, `recipe_notes`, `recipe_review`,
+`recipe_soft_delete`, `recipes_rls`).
+
+> **If you cloned this:** the owner email is hard-coded in the SQL policies.
+> Find-and-replace my email with yours in every `supabase/*.sql` file before
+> running them, or you won't be able to edit anything.
 
 Then, under **Authentication → URL Configuration**, add your app URLs to
 **Redirect URLs** (e.g. your deployed URL and `http://localhost:8081`) so the
-magic-link email can return you to the app.
+magic-link email can return you to the app. Under **Authentication → Sign In /
+Providers**, turn off **Allow new users to sign up** so only your account can
+log in.
 
-### 4. Run
+### 4. Set up the AI features (optional)
+
+The AI features run as Supabase Edge Functions, so your OpenAI key stays on
+the server. Set these secrets (**Dashboard → Edge Functions → Secrets**, or
+`supabase secrets set`):
+
+| Secret | Purpose |
+|--------|---------|
+| `OPENAI_API_KEY` | Your OpenAI key (required for AI features) |
+| `OWNER_EMAIL` | Your email. **Set this**: it restricts the AI functions to you so no one else can spend your OpenAI credits |
+| `OPENAI_MODEL` | Optional model override (default `gpt-4o`) |
+| `DISH_MODEL` | Optional model just for dish → recipe (must support images) |
+
+Then deploy the functions:
+
+```bash
+supabase functions deploy parse-recipe --project-ref <ref>
+supabase functions deploy dish-to-recipe --project-ref <ref>
+```
+
+It's also a good idea to set a monthly spending limit in your OpenAI account.
+The optional recipe agent API has its own setup notes at the top of
+[`supabase/functions/recipe-agent/index.ts`](supabase/functions/recipe-agent/index.ts).
+
+### 5. Run
 
 ```bash
 npm start        # dev server (press w for web, i for iOS, a for Android)
