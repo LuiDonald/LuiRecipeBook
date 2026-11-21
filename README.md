@@ -23,14 +23,47 @@ recipes (passwordless magic-link login).
   ingredients scaled to the servings you want.
 - ✨ **AI paste → recipe** — paste messy text (notes, a blog post, an Instagram
   caption) and get it back as a clean, structured recipe.
-- 🛒 **Shopping list** — pick recipes and get a combined, check-off-able
-  grocery list with similar ingredients grouped together (saved per device).
+- 🛒 **Shopping list** — pick recipes and get one combined, check-off-able
+  grocery list (saved per device):
+  - **Smart matching** — the same ingredient written different ways is one
+    item: "2 cloves garlic, minced", "Sauce: garlic" and "蒜頭 4粒" all count
+    as garlic; scallion = green onion = spring onion.
+  - **Amount totals** — amounts are added up across recipes, e.g. oyster
+    sauce 2 + 2 + 1 tbsp shows as **5 tbsp**; 3 × 1 tsp sugar shows as
+    **1 tbsp**; lines without an amount show as "plus some".
+  - **Store sections** — items are grouped by aisle (produce, meat, seafood,
+    eggs/dairy/tofu, rice/noodles, sauces, spices/oils, dry goods, drinks).
+- ⚖️ **Ingredient scaler** — ½× to 3× on any recipe page. Amounts (including
+  grams in brackets) update on screen; the saved recipe and the shopping list
+  keep the original amounts.
+- 👩‍🍳 **Cook mode** — tap "Start cooking" for a full-screen, one-step-at-a-time
+  view with big Back/Next buttons, an ingredients panel at your chosen scale,
+  and the screen kept awake. On a laptop, arrow keys move between steps.
 - 🗒️ **Cooking notes** — an append-only history of tweaks and refinements on
   each recipe.
 - 🤖 **Recipe agent API** — a token-protected HTTP API so an AI assistant can
   search, refine, and add recipes (new ones land in a review queue for the
-  owner to approve).
+  owner to approve). Ingredients must be sent as plain-text lines.
 - 📱 **One codebase** for native and web via `expo-router`.
+
+## Ingredient style
+
+All ingredients follow one format, so matching, totals, and scaling work:
+
+```
+<amount> <unit> <ingredient>, <prep>
+```
+
+- `2 cloves garlic, minced` · `300 g pork belly, sliced` · `Salt, to taste`
+- Units: `g`, `kg`, `ml`, `L`, `tsp`, `tbsp`, `cup`, `oz`, `lb`
+- English name first; an original Chinese name goes in brackets:
+  `1 tbsp light soy sauce (生抽)`
+- Recipe parts as a prefix: `Marinade: 1 tsp soy sauce`
+- Preferred names: scallion, cornstarch, Shaoxing wine, light/dark soy sauce,
+  cooking oil
+
+The AI imports (paste → recipe, dish → recipe) write ingredients in this style
+automatically.
 
 ## Tech stack
 
@@ -50,11 +83,15 @@ app/                       # Screens (expo-router file-based routes)
   (tabs)/shopping.tsx      #   Shopping list
   (tabs)/account.tsx       #   Magic-link login / account
   category/[name]          #   Recipes within a category
-  recipe/[id]              #   Recipe detail + cooking notes
+  recipe/[id]              #   Recipe detail, scaler, cooking notes
+  cook/[id]                #   Cook mode (one step at a time)
   edit/[id]                #   Create / edit form, incl. AI import (owner only)
 src/
   data/                    # recipeStore, folders, notes, shopping list, mock data
   lib/                     # supabase client, auth, AI clients, storage, theme
+    ingredientKey.ts       #   Canonical ingredient names (shopping-list matching)
+    quantity.ts            #   Read, scale, and add up ingredient amounts
+    storeSection.ts        #   Ingredient → store section
   types/                   # Recipe model
 supabase/
   schema.sql               # Tables, indexes, RLS policies, storage bucket
@@ -77,6 +114,8 @@ back to demo mode with a few sample recipes.
 ## Getting started
 
 ### 1. Install
+
+Requires [Node.js](https://nodejs.org) LTS (e.g. `nvm install --lts`).
 
 ```bash
 npm install
