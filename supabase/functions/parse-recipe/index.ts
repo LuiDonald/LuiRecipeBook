@@ -62,11 +62,16 @@ Return ONLY a JSON object with EXACTLY these keys:
 Rules:
 - "title": a short, clean recipe name.
 - "description": one or two sentences of context, or "" if there is nothing useful.
-- "ingredients": one ingredient per array item, keep quantities (e.g. "2 cups flour"). [] if none found.
+- "ingredients": one ingredient per array item, keep quantities. [] if none found. Write every line in this standard style:
+  - "<amount> <unit> <ingredient>, <prep>" — e.g. "2 cloves garlic, minced", "300 g pork belly, sliced". Loose amounts go after a comma: "salt, to taste", "cooking oil, a little".
+  - Units: g, kg, ml, L, tsp, tbsp, cup, oz, lb (lowercase, abbreviated, no plural "s").
+  - The ingredient name is in English. If the source names it in Chinese (or another language), keep that original name in brackets right after the English: "1 tbsp light soy sauce (生抽)", "3 slices ginger (薑)".
+  - Use these names: scallion (not green/spring onion), cornstarch (not corn starch/粟粉/生粉), Shaoxing wine (not hua diao), light soy sauce, dark soy sauce, cooking oil (for neutral/vegetable oil).
+  - If the recipe has parts, prefix the line with the part and a colon: "Marinade: 1 tsp soy sauce", "Sauce: 1 tbsp oyster sauce".
 - "steps": discrete, ordered instructions. Do NOT include leading numbers or bullets. [] if none found.
 - "tags": a few lowercase keywords (cuisine, meal type, technique). [] if unsure.
 - "category": choose the single best fit from this list, or "" if unclear: ${CATEGORIES.join(", ")}.
-- PRESERVE the original language(s) of the content. Do NOT translate. If the text mixes languages (e.g. Chinese + English), keep it as written.
+- PRESERVE the original language(s) of the title, description, and steps. Do NOT translate them. If the text mixes languages (e.g. Chinese + English), keep it as written. (Ingredients follow the standard style above: English name, original name in brackets.)
 - Keep each quantity attached to its ingredient on the same line (e.g. "3 tbsp butter", not "3 tbsp" and "butter" separately). Preserve loose amounts like "a squeeze of lemon".
 - Strip hashtags, @mentions, emojis used as spam, "follow for more", links, and other promotional filler.
 - If the input is clearly NOT a recipe, return the shape with empty string/array values.`;
@@ -87,10 +92,10 @@ const FEWSHOT: { role: "user" | "assistant"; content: string }[] = [
       ingredients: [
         "1/2 lb shrimp",
         "3 tbsp butter",
-        "4 garlic cloves, minced",
-        "A squeeze of lemon",
-        "Salt",
-        "Parsley",
+        "4 cloves garlic, minced",
+        "lemon, a squeeze",
+        "salt, to taste",
+        "parsley, to garnish",
       ],
       steps: [
         "Melt the butter in a pan.",
@@ -113,11 +118,11 @@ const FEWSHOT: { role: "user" | "assistant"; content: string }[] = [
       title: "可樂雞翼 (Coca-Cola Chicken Wings)",
       description: "",
       ingredients: [
-        "雞翼 10隻",
-        "可樂 1罐",
-        "薑",
-        "蔥",
-        "豉油 2湯匙",
+        "10 chicken wings (雞翼)",
+        "1 can Coca-Cola (可樂)",
+        "ginger (薑), a few slices",
+        "scallion (蔥), a few stalks",
+        "2 tbsp soy sauce (豉油)",
       ],
       steps: [
         "雞翼煎香。",

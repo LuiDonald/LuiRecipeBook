@@ -106,6 +106,16 @@ class BadRequest extends Error {}
 function optStringArray(v: unknown, field: string): string[] | undefined {
   if (v === undefined || v === null) return undefined;
   if (!Array.isArray(v)) throw new BadRequest(`"${field}" must be an array of strings`);
+  // Reject objects instead of String()-ing them: that silently stored
+  // "[object Object]" when an agent sent e.g. {name, amount} ingredients.
+  const bad = v.findIndex((x) => typeof x !== "string" && typeof x !== "number");
+  if (bad !== -1) {
+    throw new BadRequest(
+      `"${field}" must be an array of plain strings (item ${bad} is ${
+        Array.isArray(v[bad]) ? "an array" : typeof v[bad]
+      }); e.g. ["2 tbsp soy sauce", "3 cloves garlic, minced"]`
+    );
+  }
   return v.map((x) => String(x)).map((s) => s.trim()).filter((s) => s.length > 0);
 }
 

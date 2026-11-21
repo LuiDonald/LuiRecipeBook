@@ -70,7 +70,12 @@ Servings:
 Rules:
 - "title": a short, clean, specific dish name (e.g. "Pan-Seared Salmon with Lemon Butter").
 - "description": one or two sentences, beginning with the serving count (e.g. "Serves ~4."). Make clear it is an approximate, reverse-engineered recipe based on the photo.
-- "ingredients": one per item, with specific quantities scaled to the serving count above (e.g. "2 salmon fillets", "3 tbsp butter"). Do not mix amounts from different serving sizes.
+- "ingredients": one per item, with specific quantities scaled to the serving count above. Do not mix amounts from different serving sizes. Write every line in this standard style:
+  - "<amount> <unit> <ingredient>, <prep>" — e.g. "2 salmon fillets", "3 tbsp butter", "2 cloves garlic, minced". Loose amounts go after a comma: "salt, to taste".
+  - Units: g, kg, ml, L, tsp, tbsp, cup, oz, lb (lowercase, abbreviated, no plural "s").
+  - The ingredient name is in English. If you write the recipe in another language, keep the English name first and that language's name in brackets: "1 tbsp light soy sauce (生抽)".
+  - Use these names: scallion (not green/spring onion), cornstarch (not corn starch), Shaoxing wine (not hua diao), light soy sauce, dark soy sauce, cooking oil (for neutral/vegetable oil).
+  - If the recipe has parts, prefix the line with the part and a colon: "Marinade: 1 tsp soy sauce", "Sauce: 1 tbsp oyster sauce".
 - "steps": discrete, ordered, cookable instructions. No leading numbers or bullets.
 - "tags": a few lowercase keywords (cuisine, method, meal type).
 - "category": the single best fit from this list, or "" if unclear: ${CATEGORIES.join(", ")}.
