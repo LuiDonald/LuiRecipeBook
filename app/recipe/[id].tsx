@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Image,
@@ -16,6 +16,14 @@ import { useShoppingList, shoppingList } from "../../src/data/shoppingList";
 import { useAuth } from "../../src/lib/auth";
 import { confirmDialog, alertDialog } from "../../src/lib/dialogs";
 import { colors, maxContentWidth, radius, spacing } from "../../src/lib/theme";
+import { scaleLine } from "../../src/lib/quantity";
+
+/** Multipliers offered by the ingredient scaler. */
+const SCALES = [0.5, 1, 1.5, 2, 3];
+
+function scaleLabel(s: number): string {
+  return `${s === 0.5 ? "½" : s === 1.5 ? "1½" : s}×`;
+}
 
 /** Format an ISO timestamp as a short, readable date + time. */
 function formatNoteDate(iso: string): string {
@@ -39,6 +47,10 @@ export default function RecipeDetailScreen() {
     useRecipeNotes(id);
   const [noteText, setNoteText] = useState("");
   const [savingNote, setSavingNote] = useState(false);
+  // Ingredient scaler: only changes what's shown here, never the saved recipe
+  // or the shopping list. Resets when you open another recipe.
+  const [scale, setScale] = useState(1);
+  useEffect(() => setScale(1), [id]);
   useShoppingList(); // subscribe for re-renders
   const inShoppingList = recipe ? shoppingList.has(recipe.id) : false;
 
@@ -175,16 +187,48 @@ export default function RecipeDetailScreen() {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.heading}>Ingredients</Text>
+        <View style={styles.ingredientsHeader}>
+          <Text style={[styles.heading, styles.headingInline]}>Ingredients</Text>
+          {recipe.ingredients.length > 0 ? (
+            <View style={styles.scaler} accessibilityRole="radiogroup">
+              {SCALES.map((s) => (
+                <Pressable
+                  key={s}
+                  onPress={() => setScale(s)}
+                  style={[styles.scaleBtn, scale === s && styles.scaleBtnOn]}
+                  accessibilityRole="radio"
+                  accessibilityState={{ selected: scale === s }}
+                  accessibilityLabel={`Scale ingredients ${scaleLabel(s)}`}
+                  hitSlop={4}
+                >
+                  <Text style={[styles.scaleText, scale === s && styles.scaleTextOn]}>
+                    {scaleLabel(s)}
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
+          ) : null}
+        </View>
+        {scale !== 1 ? (
+          <Text style={styles.scaleNote}>
+            Amounts shown at {scaleLabel(scale)}. Steps and the shopping list use the
+            original amounts.
+          </Text>
+        ) : null}
         {recipe.ingredients.length === 0 ? (
           <Text style={styles.muted}>No ingredients yet.</Text>
         ) : (
-          recipe.ingredients.map((item, i) => (
-            <View key={i} style={styles.listItem}>
-              <Text style={styles.bullet}>•</Text>
-              <Text style={styles.listText}>{item}</Text>
-            </View>
-          ))
+          recipe.ingredients.map((item, i) => {
+            const shown = scaleLine(item, scale);
+            return (
+              <View key={i} style={styles.listItem}>
+                <Text style={styles.bullet}>•</Text>
+                <Text style={[styles.listText, shown !== item && styles.scaledText]}>
+                  {shown}
+                </Text>
+              </View>
+            );
+          })
         )}
       </View>
 
@@ -325,6 +369,33 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   listText: { flex: 1, fontSize: 15, color: colors.text, lineHeight: 22 },
+  scaledText: { fontWeight: "600" },
+  ingredientsHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    flexWrap: "wrap",
+    gap: spacing.sm,
+    marginBottom: spacing.xs,
+  },
+  headingInline: { marginBottom: 0 },
+  scaler: {
+    flexDirection: "row",
+    backgroundColor: colors.primarySoft,
+    borderRadius: radius.sm,
+    padding: 2,
+  },
+  scaleBtn: {
+    minWidth: 40,
+    paddingVertical: 4,
+    paddingHorizontal: spacing.sm,
+    borderRadius: radius.sm - 2,
+    alignItems: "center",
+  },
+  scaleBtnOn: { backgroundColor: colors.primary },
+  scaleText: { fontSize: 13, fontWeight: "700", color: colors.primary },
+  scaleTextOn: { color: "#fff" },
+  scaleNote: { fontSize: 13, color: colors.textMuted, marginBottom: spacing.xs },
   muted: { color: colors.textMuted },
   noteComposer: { gap: spacing.sm, marginBottom: spacing.sm },
   noteInput: {

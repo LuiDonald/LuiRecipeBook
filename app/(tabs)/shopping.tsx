@@ -16,6 +16,7 @@ import {
 } from "../../src/data/shoppingList";
 import { Recipe } from "../../src/types/recipe";
 import { confirmDialog } from "../../src/lib/dialogs";
+import { totalAmount } from "../../src/lib/quantity";
 import { colors, maxContentWidth, radius, spacing } from "../../src/lib/theme";
 
 function capitalize(s: string): string {
@@ -52,7 +53,12 @@ export default function ShoppingScreen() {
       });
     }
     return Array.from(map.entries())
-      .map(([key, v]) => ({ key, ...v }))
+      .map(([key, v]) => ({
+        key,
+        ...v,
+        // Sum of the amounts, e.g. "3 tbsp" or "20 cloves, plus some".
+        total: totalAmount(v.entries.map((e) => e.text)),
+      }))
       .sort((a, b) => a.label.localeCompare(b.label));
   }, [selectedRecipes, recipes]);
 
@@ -213,10 +219,20 @@ export default function ShoppingScreen() {
                       {done ? <Text style={styles.checkmark}>✓</Text> : null}
                     </View>
                     <View style={styles.itemBody}>
-                      <Text style={[styles.itemText, done && styles.itemDone]}>
-                        {g.label}
-                        {g.entries.length > 1 ? `  ×${g.entries.length}` : ""}
-                      </Text>
+                      <View style={styles.itemHead}>
+                        <Text style={[styles.itemText, done && styles.itemDone]}>
+                          {g.label}
+                        </Text>
+                        {g.total ? (
+                          <Text style={[styles.itemTotal, done && styles.itemDone]}>
+                            {g.total}
+                          </Text>
+                        ) : g.entries.length > 1 ? (
+                          <Text style={[styles.itemTotal, done && styles.itemDone]}>
+                            ×{g.entries.length}
+                          </Text>
+                        ) : null}
+                      </View>
                       {showSub ? (
                         <Text style={styles.itemSub}>
                           {g.entries.map((e) => e.text).join("   +   ")}
@@ -411,6 +427,16 @@ const styles = StyleSheet.create({
   },
   itemBody: { flex: 1, gap: 2 },
   itemText: { flex: 1, fontSize: 15, color: colors.text, lineHeight: 22 },
+  itemHead: { flexDirection: "row", alignItems: "baseline", gap: spacing.sm },
+  itemTotal: {
+    fontSize: 15,
+    fontWeight: "700",
+    color: colors.text,
+    textAlign: "right",
+    flexShrink: 1,
+    maxWidth: "55%",
+    fontVariant: ["tabular-nums"],
+  },
   itemSub: { fontSize: 12, color: colors.textMuted },
   itemDone: { color: colors.textMuted, textDecorationLine: "line-through" },
   checkbox: {
