@@ -17,6 +17,7 @@ import {
 import { Recipe } from "../../src/types/recipe";
 import { confirmDialog } from "../../src/lib/dialogs";
 import { totalAmount } from "../../src/lib/quantity";
+import { storeSection, SECTION_ORDER } from "../../src/lib/storeSection";
 import { colors, maxContentWidth, radius, spacing } from "../../src/lib/theme";
 
 function capitalize(s: string): string {
@@ -58,6 +59,7 @@ export default function ShoppingScreen() {
         ...v,
         // Sum of the amounts, e.g. "3 tbsp" or "20 cloves, plus some".
         total: totalAmount(v.entries.map((e) => e.text)),
+        section: storeSection(key),
       }))
       .sort((a, b) => a.label.localeCompare(b.label));
   }, [selectedRecipes, recipes]);
@@ -202,47 +204,63 @@ export default function ShoppingScreen() {
           </View>
 
           {view === "combined" ? (
-            <View style={styles.group}>
-              {groups.map((g) => {
-                const keys = g.entries.map((e) => e.key);
-                const done = keys.every((k) => shoppingList.isChecked(k));
-                const showSub =
-                  g.entries.length > 1 ||
-                  g.entries[0].text.trim().toLowerCase() !== g.label.toLowerCase();
-                return (
-                  <Pressable
-                    key={g.key}
-                    style={styles.itemRow}
-                    onPress={() => shoppingList.setItems(keys, !done)}
-                  >
-                    <View style={[styles.checkbox, done && styles.checkboxOn]}>
-                      {done ? <Text style={styles.checkmark}>✓</Text> : null}
-                    </View>
-                    <View style={styles.itemBody}>
-                      <View style={styles.itemHead}>
-                        <Text style={[styles.itemText, done && styles.itemDone]}>
-                          {g.label}
-                        </Text>
-                        {g.total ? (
-                          <Text style={[styles.itemTotal, done && styles.itemDone]}>
-                            {g.total}
-                          </Text>
-                        ) : g.entries.length > 1 ? (
-                          <Text style={[styles.itemTotal, done && styles.itemDone]}>
-                            ×{g.entries.length}
-                          </Text>
-                        ) : null}
-                      </View>
-                      {showSub ? (
-                        <Text style={styles.itemSub}>
-                          {g.entries.map((e) => e.text).join("   +   ")}
-                        </Text>
-                      ) : null}
-                    </View>
-                  </Pressable>
-                );
-              })}
-            </View>
+            // One card per store section, in walking order.
+            SECTION_ORDER.map((section) => {
+              const inSection = groups.filter((g) => g.section === section);
+              if (inSection.length === 0) return null;
+              const sectionDone = inSection.filter((g) =>
+                g.entries.every((e) => shoppingList.isChecked(e.key))
+              ).length;
+              return (
+                <View key={section} style={styles.group}>
+                  <View style={styles.sectionHead}>
+                    <Text style={styles.groupTitle}>{section}</Text>
+                    <Text style={styles.sectionCount}>
+                      {sectionDone}/{inSection.length}
+                    </Text>
+                  </View>
+                  {inSection.map((g) => {
+                    const keys = g.entries.map((e) => e.key);
+                    const done = keys.every((k) => shoppingList.isChecked(k));
+                    const showSub =
+                      g.entries.length > 1 ||
+                      g.entries[0].text.trim().toLowerCase() !== g.label.toLowerCase();
+                    return (
+                      <Pressable
+                        key={g.key}
+                        style={styles.itemRow}
+                        onPress={() => shoppingList.setItems(keys, !done)}
+                      >
+                        <View style={[styles.checkbox, done && styles.checkboxOn]}>
+                          {done ? <Text style={styles.checkmark}>✓</Text> : null}
+                        </View>
+                        <View style={styles.itemBody}>
+                          <View style={styles.itemHead}>
+                            <Text style={[styles.itemText, done && styles.itemDone]}>
+                              {g.label}
+                            </Text>
+                            {g.total ? (
+                              <Text style={[styles.itemTotal, done && styles.itemDone]}>
+                                {g.total}
+                              </Text>
+                            ) : g.entries.length > 1 ? (
+                              <Text style={[styles.itemTotal, done && styles.itemDone]}>
+                                ×{g.entries.length}
+                              </Text>
+                            ) : null}
+                          </View>
+                          {showSub ? (
+                            <Text style={styles.itemSub}>
+                              {g.entries.map((e) => e.text).join("   +   ")}
+                            </Text>
+                          ) : null}
+                        </View>
+                      </Pressable>
+                    );
+                  })}
+                </View>
+              );
+            })
           ) : (
             selectedRecipes.map((r) => (
               <View key={r.id} style={styles.group}>
@@ -428,6 +446,12 @@ const styles = StyleSheet.create({
   itemBody: { flex: 1, gap: 2 },
   itemText: { flex: 1, fontSize: 15, color: colors.text, lineHeight: 22 },
   itemHead: { flexDirection: "row", alignItems: "baseline", gap: spacing.sm },
+  sectionHead: {
+    flexDirection: "row",
+    alignItems: "baseline",
+    justifyContent: "space-between",
+  },
+  sectionCount: { fontSize: 13, color: colors.textMuted, fontVariant: ["tabular-nums"] },
   itemTotal: {
     fontSize: 15,
     fontWeight: "700",

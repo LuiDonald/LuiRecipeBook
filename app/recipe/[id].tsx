@@ -234,6 +234,22 @@ export default function RecipeDetailScreen() {
 
       <View style={styles.section}>
         <Text style={styles.heading}>Steps</Text>
+        {recipe.steps.length > 0 ? (
+          <Pressable
+            style={styles.cookBtn}
+            onPress={() =>
+              router.push({
+                pathname: "/cook/[id]",
+                params: { id: recipe.id, scale: String(scale) },
+              })
+            }
+            accessibilityRole="button"
+          >
+            <Text style={styles.cookBtnText}>
+              ▶ Start cooking{scale !== 1 ? ` (${scaleLabel(scale)})` : ""}
+            </Text>
+          </Pressable>
+        ) : null}
         {recipe.steps.length === 0 ? (
           <Text style={styles.muted}>No steps yet.</Text>
         ) : (
@@ -370,6 +386,14 @@ const styles = StyleSheet.create({
   },
   listText: { flex: 1, fontSize: 15, color: colors.text, lineHeight: 22 },
   scaledText: { fontWeight: "600" },
+  cookBtn: {
+    backgroundColor: colors.primary,
+    borderRadius: radius.md,
+    paddingVertical: spacing.md,
+    alignItems: "center",
+    marginBottom: spacing.xs,
+  },
+  cookBtnText: { color: "#fff", fontSize: 16, fontWeight: "700" },
   ingredientsHeader: {
     flexDirection: "row",
     alignItems: "center",

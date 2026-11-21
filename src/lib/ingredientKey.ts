@@ -22,7 +22,8 @@ const UNIT_WORDS = new Set([
   "sheet", "sheets", "cube", "cubes", "stick", "sticks", "bottle", "bottles",
   "jar", "jars", "bag", "bags", "box", "boxes", "inch", "inches", "cm", "knob",
   "knobs", "thumb", "size", "sized", "x", "part", "parts", "chunk", "chunks",
-  "splash", "drizzle", "spoon", "spoons", "pc", "pcs", "catty",
+  "splash", "drizzle", "spoon", "spoons", "pc", "pcs", "catty", "bowl", "bowls",
+  "bundle", "bundles", "block", "blocks", "heaped",
 ]);
 
 // Size / prep / filler words stripped from the name.
@@ -167,7 +168,7 @@ const SPELLINGS: Record<string, string> = {
 // Words that end in "s" but aren't plurals.
 const NOT_PLURAL = new Set([
   "molasses", "hummus", "couscous", "asparagus", "citrus", "octopus", "swiss",
-  "brussels", "series", "mayonnaise", "jus", "this", "ques",
+  "brussels", "series", "mayonnaise", "jus", "this", "ques", "manis",
 ]);
 
 /** Light English singularization: "tomatoes" -> "tomato", "berries" -> "berry". */
