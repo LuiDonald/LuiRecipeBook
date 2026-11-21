@@ -39,6 +39,10 @@ recipes (passwordless magic-link login).
 - 👩‍🍳 **Cook mode** — tap "Start cooking" for a full-screen, one-step-at-a-time
   view with big Back/Next buttons, an ingredients panel at your chosen scale,
   and the screen kept awake. On a laptop, arrow keys move between steps.
+- ⭐ **Favorites and recently cooked** — star recipes, and log when you make
+  them ("I made this today", or finish cook mode). Each recipe shows how often
+  and when you last cooked it, and the home screen lists your favorites and
+  the last 5 recipes you made (saved per device).
 - 🗒️ **Cooking notes** — an append-only history of tweaks and refinements on
   each recipe.
 - 🤖 **Recipe agent API** — a token-protected HTTP API so an AI assistant can
@@ -83,15 +87,17 @@ app/                       # Screens (expo-router file-based routes)
   (tabs)/shopping.tsx      #   Shopping list
   (tabs)/account.tsx       #   Magic-link login / account
   category/[name]          #   Recipes within a category
-  recipe/[id]              #   Recipe detail, scaler, cooking notes
+  recipe/[id]              #   Recipe detail, scaler, favorite, cooking notes
   cook/[id]                #   Cook mode (one step at a time)
   edit/[id]                #   Create / edit form, incl. AI import (owner only)
 src/
-  data/                    # recipeStore, folders, notes, shopping list, mock data
+  data/                    # recipeStore, folders, notes, shopping list,
+                           #   kitchenLog (favorites + cooked history), mock data
   lib/                     # supabase client, auth, AI clients, storage, theme
     ingredientKey.ts       #   Canonical ingredient names (shopping-list matching)
     quantity.ts            #   Read, scale, and add up ingredient amounts
     storeSection.ts        #   Ingredient → store section
+    deviceStorage.ts       #   Per-device storage (shopping list, favorites)
   types/                   # Recipe model
 supabase/
   schema.sql               # Tables, indexes, RLS policies, storage bucket
