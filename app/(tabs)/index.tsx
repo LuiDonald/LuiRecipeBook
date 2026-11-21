@@ -19,6 +19,7 @@ import { useAuth } from "../../src/lib/auth";
 import { confirmDialog, alertDialog } from "../../src/lib/dialogs";
 import { colors, maxContentWidth, radius, spacing } from "../../src/lib/theme";
 import { Recipe } from "../../src/types/recipe";
+import { useKitchenLog, describeDay } from "../../src/data/kitchenLog";
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -34,6 +35,17 @@ export default function HomeScreen() {
   const [creating, setCreating] = useState(false);
 
   const counts = useMemo(() => recipeStore.countsByCategory(), [recipes]);
+  const kitchen = useKitchenLog();
+  // Recipes that still exist (a favorite may since have been deleted).
+  const favoriteRecipes = kitchen
+    .getFavorites()
+    .map((id) => recipeStore.getById(id))
+    .filter((r): r is Recipe => !!r);
+  const recentRecipes = kitchen
+    .getRecentlyCooked(5)
+    .map((id) => recipeStore.getById(id))
+    .filter((r): r is Recipe => !!r);
+  const showPersonal = favoriteRecipes.length > 0 || recentRecipes.length > 0;
 
   // Active managed folders, plus any categories present in recipe data that
   // aren't managed yet (brand-new / unforeseen folders). Soft-deleted folders
@@ -145,24 +157,57 @@ export default function HomeScreen() {
           style={styles.centeredList}
           contentContainerStyle={styles.list}
           ListHeaderComponent={
-            isEditor ? (
-              <View style={styles.folderTools}>
-                <Pressable
-                  style={styles.toolBtn}
-                  onPress={() => setShowCreate(true)}
-                >
-                  <Text style={styles.toolBtnText}>＋ New folder</Text>
-                </Pressable>
-                <Pressable
-                  style={styles.toolBtn}
-                  onPress={() => setEditing((e) => !e)}
-                >
-                  <Text style={styles.toolBtnText}>
-                    {editing ? "Done" : "Edit"}
-                  </Text>
-                </Pressable>
-              </View>
-            ) : null
+            <>
+              {favoriteRecipes.length > 0 ? (
+                <View style={styles.personalSection}>
+                  <Text style={styles.sectionTitle}>★ Favorites</Text>
+                  {favoriteRecipes.map((r) => (
+                    <RecipeRow
+                      key={r.id}
+                      recipe={r}
+                      subtitle={
+                        kitchen.lastCooked(r.id)
+                          ? `${r.category || "Uncategorized"} · cooked ${describeDay(kitchen.lastCooked(r.id)!)}`
+                          : undefined
+                      }
+                      onPress={() => router.push(`/recipe/${r.id}`)}
+                    />
+                  ))}
+                </View>
+              ) : null}
+              {recentRecipes.length > 0 ? (
+                <View style={styles.personalSection}>
+                  <Text style={styles.sectionTitle}>Recently cooked</Text>
+                  {recentRecipes.map((r) => (
+                    <RecipeRow
+                      key={r.id}
+                      recipe={r}
+                      subtitle={`Cooked ${describeDay(kitchen.lastCooked(r.id)!)} · ${kitchen.cookedDays(r.id).length}×`}
+                      onPress={() => router.push(`/recipe/${r.id}`)}
+                    />
+                  ))}
+                </View>
+              ) : null}
+              {showPersonal ? <Text style={styles.sectionTitle}>Folders</Text> : null}
+              {isEditor ? (
+                <View style={styles.folderTools}>
+                  <Pressable
+                    style={styles.toolBtn}
+                    onPress={() => setShowCreate(true)}
+                  >
+                    <Text style={styles.toolBtnText}>＋ New folder</Text>
+                  </Pressable>
+                  <Pressable
+                    style={styles.toolBtn}
+                    onPress={() => setEditing((e) => !e)}
+                  >
+                    <Text style={styles.toolBtnText}>
+                      {editing ? "Done" : "Edit"}
+                    </Text>
+                  </Pressable>
+                </View>
+              ) : null}
+            </>
           }
           renderItem={({ item }) => (
             <FolderRow
@@ -289,9 +334,12 @@ function FolderRow({
 
 function RecipeRow({
   recipe,
+  subtitle,
   onPress,
 }: {
   recipe: Recipe;
+  /** Overrides the default category subtitle. */
+  subtitle?: string;
   onPress: () => void;
 }) {
   return (
@@ -309,7 +357,7 @@ function RecipeRow({
           {recipe.title}
         </Text>
         <Text style={styles.rowSubtitle} numberOfLines={1}>
-          {recipe.category || "Uncategorized"}
+          {subtitle ?? (recipe.category || "Uncategorized")}
         </Text>
       </View>
       <Text style={styles.chevron}>›</Text>
@@ -380,6 +428,15 @@ const styles = StyleSheet.create({
   rowTitle: { fontSize: 16, fontWeight: "600", color: colors.text },
   rowSubtitle: { fontSize: 13, color: colors.textMuted },
   chevron: { fontSize: 22, color: colors.textMuted },
+  personalSection: { marginBottom: spacing.md },
+  sectionTitle: {
+    fontSize: 13,
+    fontWeight: "700",
+    color: colors.textMuted,
+    textTransform: "uppercase",
+    letterSpacing: 0.6,
+    marginBottom: spacing.sm,
+  },
   folderTools: {
     flexDirection: "row",
     justifyContent: "flex-end",

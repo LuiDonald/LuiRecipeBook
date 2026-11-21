@@ -9,6 +9,7 @@ import {
 } from "expo-keep-awake";
 import { useRecipe } from "../../src/data/recipeStore";
 import { scaleLine } from "../../src/lib/quantity";
+import { kitchenLog } from "../../src/data/kitchenLog";
 import { colors, maxContentWidth, radius, spacing } from "../../src/lib/theme";
 
 const KEEP_AWAKE_TAG = "cook-mode";
@@ -151,7 +152,16 @@ export default function CookScreen() {
               <Text style={styles.navNextText}>Next ›</Text>
             </Pressable>
           ) : (
-            <Pressable style={[styles.navBtn, styles.navNext]} onPress={close} accessibilityRole="button">
+            <Pressable
+              style={[styles.navBtn, styles.navNext]}
+              onPress={() => {
+                // Finishing the last step counts as having made it today.
+                kitchenLog.logCooked(recipe.id);
+                close();
+              }}
+              accessibilityRole="button"
+              accessibilityLabel="Done, mark as made today"
+            >
               <Text style={styles.navNextText}>Done</Text>
             </Pressable>
           )}

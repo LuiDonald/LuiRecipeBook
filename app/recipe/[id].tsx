@@ -17,6 +17,7 @@ import { useAuth } from "../../src/lib/auth";
 import { confirmDialog, alertDialog } from "../../src/lib/dialogs";
 import { colors, maxContentWidth, radius, spacing } from "../../src/lib/theme";
 import { scaleLine } from "../../src/lib/quantity";
+import { useKitchenLog, describeDay } from "../../src/data/kitchenLog";
 
 /** Multipliers offered by the ingredient scaler. */
 const SCALES = [0.5, 1, 1.5, 2, 3];
@@ -53,6 +54,10 @@ export default function RecipeDetailScreen() {
   useEffect(() => setScale(1), [id]);
   useShoppingList(); // subscribe for re-renders
   const inShoppingList = recipe ? shoppingList.has(recipe.id) : false;
+  const kitchen = useKitchenLog();
+  const favorite = recipe ? kitchen.isFavorite(recipe.id) : false;
+  const cookedDays = recipe ? kitchen.cookedDays(recipe.id) : [];
+  const cookedToday = recipe ? kitchen.cookedToday(recipe.id) : false;
 
   if (!recipe) {
     return (
@@ -156,7 +161,26 @@ export default function RecipeDetailScreen() {
         {recipe.category ? (
           <Text style={styles.category}>{recipe.category}</Text>
         ) : null}
-        <Text style={styles.title}>{recipe.title}</Text>
+        <View style={styles.titleRow}>
+          <Text style={[styles.title, styles.titleFlex]}>{recipe.title}</Text>
+          <Pressable
+            onPress={() => kitchen.toggleFavorite(recipe.id)}
+            hitSlop={10}
+            accessibilityRole="button"
+            accessibilityState={{ selected: favorite }}
+            accessibilityLabel={favorite ? "Remove from favorites" : "Add to favorites"}
+          >
+            <Text style={[styles.star, favorite && styles.starOn]}>
+              {favorite ? "★" : "☆"}
+            </Text>
+          </Pressable>
+        </View>
+        {cookedDays.length > 0 ? (
+          <Text style={styles.cookedLine}>
+            Cooked {cookedDays.length} time{cookedDays.length === 1 ? "" : "s"} · last{" "}
+            {describeDay(cookedDays[cookedDays.length - 1])}
+          </Text>
+        ) : null}
         {recipe.description ? (
           <Text style={styles.description}>{recipe.description}</Text>
         ) : null}
@@ -182,6 +206,17 @@ export default function RecipeDetailScreen() {
             {inShoppingList
               ? "✓ In shopping list — tap to remove"
               : "＋ Add to shopping list"}
+          </Text>
+        </Pressable>
+        <Pressable
+          style={[styles.shopBtn, cookedToday && styles.shopBtnActive]}
+          onPress={() =>
+            cookedToday ? kitchen.unlogToday(recipe.id) : kitchen.logCooked(recipe.id)
+          }
+          accessibilityRole="button"
+        >
+          <Text style={[styles.shopText, cookedToday && styles.shopTextActive]}>
+            {cookedToday ? "✓ Made today — tap to undo" : "🍳 I made this today"}
           </Text>
         </Pressable>
       </View>
@@ -386,6 +421,11 @@ const styles = StyleSheet.create({
   },
   listText: { flex: 1, fontSize: 15, color: colors.text, lineHeight: 22 },
   scaledText: { fontWeight: "600" },
+  titleRow: { flexDirection: "row", alignItems: "flex-start", gap: spacing.md },
+  titleFlex: { flex: 1 },
+  star: { fontSize: 30, lineHeight: 32, color: colors.textMuted },
+  starOn: { color: "#F2A900" },
+  cookedLine: { fontSize: 13, color: colors.primary, fontWeight: "600" },
   cookBtn: {
     backgroundColor: colors.primary,
     borderRadius: radius.md,

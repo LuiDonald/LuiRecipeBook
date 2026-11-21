@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { Platform } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { loadRaw, saveRaw } from "../lib/deviceStorage";
 
 /**
  * A small, locally-persisted shopping list: a set of selected recipe ids plus
@@ -24,33 +23,6 @@ export function itemKey(recipeId: string, index: number): string {
 
 export { ingredientKey } from "../lib/ingredientKey";
 
-async function loadRaw(): Promise<string | null> {
-  if (Platform.OS === "web") {
-    try {
-      return typeof localStorage !== "undefined" ? localStorage.getItem(KEY) : null;
-    } catch {
-      return null;
-    }
-  }
-  try {
-    return await AsyncStorage.getItem(KEY);
-  } catch {
-    return null;
-  }
-}
-
-function saveRaw(value: string): void {
-  if (Platform.OS === "web") {
-    try {
-      localStorage.setItem(KEY, value);
-    } catch {
-      /* ignore quota / unavailable */
-    }
-    return;
-  }
-  void AsyncStorage.setItem(KEY, value).catch(() => {});
-}
-
 type Listener = () => void;
 
 class ShoppingListStore {
@@ -72,7 +44,7 @@ class ShoppingListStore {
   private async hydrate() {
     if (this.hydrated) return;
     this.hydrated = true;
-    const raw = await loadRaw();
+    const raw = await loadRaw(KEY);
     if (!raw) return;
     try {
       const parsed = JSON.parse(raw) as PersistShape;
@@ -85,7 +57,7 @@ class ShoppingListStore {
   }
 
   private persist() {
-    saveRaw(JSON.stringify({ recipeIds: this.recipeIds, checked: this.checked }));
+    saveRaw(KEY, JSON.stringify({ recipeIds: this.recipeIds, checked: this.checked }));
   }
 
   getRecipeIds(): string[] {
